@@ -17,7 +17,7 @@ public static class Constants
     public const int NormalBulletDamage = 1;
 
     // Projectiles — charged
-    public const float ChargeTimeLevel1 = 1.5f;
+    public const float ChargeTimeLevel1 = .85f;
     public const float ChargedBulletSpeed = 600f;
     public const float ChargedBulletWidth = 32f;
     public const float ChargedBulletHeight = 16f;

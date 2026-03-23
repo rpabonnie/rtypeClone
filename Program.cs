@@ -10,6 +10,8 @@ public static class Program
         Raylib.InitWindow(Constants.ScreenWidth, Constants.ScreenHeight, "R-Type Clone");
         Raylib.SetTargetFPS(60);
 
+        AssetManager.Load();
+
         var gameState = new GameState();
         var inputManager = new InputManager();
 
@@ -26,6 +28,7 @@ public static class Program
             Raylib.EndDrawing();
         }
 
+        AssetManager.Unload();
         Raylib.CloseWindow();
     }
 }
