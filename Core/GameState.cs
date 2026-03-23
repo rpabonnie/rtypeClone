@@ -38,7 +38,7 @@ public class GameState
         _enemyPool.ForEachActive((enemy, i) =>
         {
             enemy.Update(dt);
-            if (enemy.IsOffScreen())
+            if (enemy.IsOffScreen(Constants.EnemySpawnMargin))
                 _enemyPool.Return(i);
         });
 

@@ -16,7 +16,7 @@ public class CollisionSystem
                 if (Raylib.CheckCollisionRecs(bullet.Bounds, enemy.Bounds))
                 {
                     bullets.Return(bi);
-                    enemy.Health--;
+                    enemy.Health -= bullet.Damage;
                     if (enemy.Health <= 0)
                     {
                         enemies.Return(ei);

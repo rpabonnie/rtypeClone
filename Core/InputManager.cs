@@ -17,6 +17,8 @@ public class InputManager
     public InputDevice ActiveDevice { get; private set; } = InputDevice.Gamepad;
     public Vector2 Movement { get; private set; }
     public bool ShootPressed { get; private set; }
+    public bool ShootHeld { get; private set; }
+    public bool ShootReleased { get; private set; }
 
     public void Update()
     {
@@ -29,11 +31,15 @@ public class InputManager
         if (Raylib.IsKeyDown(KeyboardKey.D) || Raylib.IsKeyDown(KeyboardKey.Right))  { kbMovement.X += 1f; kbUsed = true; }
 
         bool kbShoot = Raylib.IsKeyPressed(KeyboardKey.Space) || Raylib.IsMouseButtonPressed(MouseButton.Left);
-        if (kbShoot) kbUsed = true;
+        bool kbShootHeld = Raylib.IsKeyDown(KeyboardKey.Space) || Raylib.IsMouseButtonDown(MouseButton.Left);
+        bool kbShootReleased = Raylib.IsKeyReleased(KeyboardKey.Space) || Raylib.IsMouseButtonReleased(MouseButton.Left);
+        if (kbShoot || kbShootHeld || kbShootReleased) kbUsed = true;
 
         Vector2 gpMovement = Vector2.Zero;
         bool gpUsed = false;
         bool gpShoot = false;
+        bool gpShootHeld = false;
+        bool gpShootReleased = false;
 
         if (Raylib.IsGamepadAvailable(GamepadIndex))
         {
@@ -46,11 +52,10 @@ public class InputManager
                 gpUsed = true;
             }
 
-            if (Raylib.IsGamepadButtonPressed(GamepadIndex, GamepadButton.RightFaceDown))
-            {
-                gpShoot = true;
-                gpUsed = true;
-            }
+            gpShoot = Raylib.IsGamepadButtonPressed(GamepadIndex, GamepadButton.RightFaceDown);
+            gpShootHeld = Raylib.IsGamepadButtonDown(GamepadIndex, GamepadButton.RightFaceDown);
+            gpShootReleased = Raylib.IsGamepadButtonReleased(GamepadIndex, GamepadButton.RightFaceDown);
+            if (gpShoot || gpShootHeld || gpShootReleased) gpUsed = true;
         }
 
         // Most recently used device wins
@@ -61,11 +66,15 @@ public class InputManager
         {
             Movement = gpMovement;
             ShootPressed = gpShoot;
+            ShootHeld = gpShootHeld;
+            ShootReleased = gpShootReleased;
         }
         else
         {
             Movement = kbMovement;
             ShootPressed = kbShoot;
+            ShootHeld = kbShootHeld;
+            ShootReleased = kbShootReleased;
         }
 
         // Normalize to prevent diagonal speed boost

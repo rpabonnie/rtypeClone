@@ -16,10 +16,10 @@ public abstract class Entity
     public abstract void Update(float dt);
     public abstract void Draw();
 
-    public bool IsOffScreen()
+    public bool IsOffScreen(float rightMargin = 0f)
     {
         return Position.X + Width < 0
-            || Position.X > Core.Constants.ScreenWidth
+            || Position.X > Core.Constants.ScreenWidth + rightMargin
             || Position.Y + Height < 0
             || Position.Y > Core.Constants.ScreenHeight;
     }
