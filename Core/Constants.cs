@@ -23,7 +23,16 @@ public static class Constants
     public const float ChargedBulletHeight = 16f;
     public const int ChargedBulletDamage = 3;
 
+    // Player — invincibility frames
+    public const float IFrameDuration = 1.5f;          // seconds of invincibility after hit
+    public const float IFrameFlashInterval = 0.1f;     // seconds between visibility toggles
+
     // Enemies
     public const int EnemyPoolSize = 32;
     public const float EnemySpawnMargin = 60f;
+    public const float EnemyBaseSpeed = 200f;
+    public const float EnemySineAmplitude = 120f;       // vertical oscillation range
+    public const float EnemySineFrequency = 2.5f;       // oscillation speed
+    public const float EnemyZigzagInterval = 0.8f;      // seconds between direction changes
+    public const float EnemyZigzagVerticalSpeed = 150f;  // vertical speed for zigzag
 }

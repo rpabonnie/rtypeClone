@@ -9,6 +9,13 @@ public class WaveSpawner
     private float _spawnTimer;
     private const float SpawnInterval = 1.5f;
 
+    private static readonly EnemyMovePattern[] Patterns =
+    {
+        EnemyMovePattern.Straight,
+        EnemyMovePattern.Sine,
+        EnemyMovePattern.Zigzag,
+    };
+
     public void Update(float dt, ObjectPool<Enemy> enemyPool)
     {
         _spawnTimer -= dt;
@@ -18,9 +25,16 @@ public class WaveSpawner
             if (enemy != null)
             {
                 float y = 50f + Random.Shared.Next(0, Constants.ScreenHeight - 100);
+                var pattern = Patterns[Random.Shared.Next(Patterns.Length)];
+
+                // Vary horizontal speed slightly per enemy
+                float speed = Constants.EnemyBaseSpeed + Random.Shared.Next(-40, 41);
+
                 enemy.Spawn(
                     new Vector2(Constants.ScreenWidth + 40f, y),
-                    new Vector2(-200f, 0f)
+                    new Vector2(-speed, 0f),
+                    health: 1,
+                    pattern: pattern
                 );
             }
             _spawnTimer = SpawnInterval;
