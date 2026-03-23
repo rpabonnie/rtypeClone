@@ -8,7 +8,9 @@
       "Bash(dotnet --version)",
       "Bash(export PATH=\"$PATH:/c/Program Files/dotnet\")",
       "Bash(dotnet add:*)",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(gh repo:*)",
+      "Bash(where gh:*)"
     ]
   }
 }
