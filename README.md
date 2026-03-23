@@ -80,4 +80,4 @@ This is an open learning space. Whether you're:
 
 ## License
 
-[Add your preferred license here]
+This project is licensed under the [MIT License](LICENSE).

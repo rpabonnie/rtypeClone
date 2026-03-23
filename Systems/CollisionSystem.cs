@@ -26,14 +26,17 @@ public class CollisionSystem
             });
         });
 
-        // Enemies vs Player
-        enemies.ForEachActive((enemy, ei) =>
+        // Enemies vs Player (skip if invincible)
+        if (!player.IsInvincible)
         {
-            if (Raylib.CheckCollisionRecs(player.Bounds, enemy.Bounds))
+            enemies.ForEachActive((enemy, ei) =>
             {
-                enemies.Return(ei);
-                player.Health--;
-            }
-        });
+                if (Raylib.CheckCollisionRecs(player.Bounds, enemy.Bounds))
+                {
+                    enemies.Return(ei);
+                    player.TakeHit();
+                }
+            });
+        }
     }
 }

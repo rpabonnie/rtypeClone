@@ -8,8 +8,10 @@ public class Player : Entity
 {
     private float _chargeTimer;
     private bool _isCharging;
+    private float _iFrameTimer;
     public int Health = 3;
     public int Score;
+    public bool IsInvincible => _iFrameTimer > 0f;
 
     public Player()
     {
@@ -19,8 +21,19 @@ public class Player : Entity
         Active = true;
     }
 
+    public void TakeHit()
+    {
+        if (IsInvincible) return;
+        Health--;
+        _iFrameTimer = Constants.IFrameDuration;
+    }
+
     public void Update(float dt, InputManager input, ObjectPool<Projectile> bulletPool)
     {
+        // Invincibility timer
+        if (_iFrameTimer > 0f)
+            _iFrameTimer -= dt;
+
         // Movement
         Position += input.Movement * Constants.PlayerSpeed * dt;
         Position.X = Math.Clamp(Position.X, 0f, Constants.ScreenWidth - Width);
@@ -72,6 +85,13 @@ public class Player : Entity
     public override void Draw()
     {
         if (!Active) return;
+
+        // Skip rendering every other flash interval during i-frames
+        if (IsInvincible)
+        {
+            int flashIndex = (int)(_iFrameTimer / Constants.IFrameFlashInterval);
+            if (flashIndex % 2 == 1) return;
+        }
 
         // Charge indicator — only show after initial tap phase
         if (_isCharging && _chargeTimer > 0.1f)
