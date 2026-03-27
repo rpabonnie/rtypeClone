@@ -10,7 +10,9 @@
       "Bash(dotnet add:*)",
       "Bash(dotnet build:*)",
       "Bash(gh repo:*)",
-      "Bash(where gh:*)"
+      "Bash(where gh:*)",
+      "Bash(gh api:*)",
+      "Bash(git -C:*)"
     ]
   }
 }
