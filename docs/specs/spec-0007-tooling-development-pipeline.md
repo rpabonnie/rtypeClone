@@ -6,7 +6,7 @@
 | Status   | Draft                            |
 | Author   | rpabo                            |
 | Created  | 2026-03-25                       |
-| Updated  | 2026-03-25                       |
+| Updated  | 2026-03-27                       |
 
 ## Overview
 
@@ -31,17 +31,19 @@ No migration to Unity, Godot, MonoGame, or any other framework is warranted. The
 
 ### Philosophy
 
-The game targets hand-drawn pen/pencil art — scanned or tablet-digitized, not pixel art. Sprites should look like illustrations rather than retro sprites. Target resolution is 1920×1080 with no upscaling filter.
+The game targets hand-drawn pen/pencil art — digitized on iPad with Procreate, not pixel art. Sprites should look like illustrations rather than retro sprites. Target resolution is 1920×1080 with no upscaling filter.
 
 ### Tools
 
-#### Krita (primary painting tool)
+#### Procreate (primary drawing tool — iPad)
 
-- **Why Krita:** Free, open-source, excellent for pen/pencil linework and digital inking. Supports `.kra` project files with layers and `.png` export. Tablet pressure sensitivity works out of the box.
+- **Why Procreate:** The artist (Ray) draws on iPad using Procreate. Apple Pencil pressure sensitivity, natural pen/pencil brushes, and layer support make it ideal for the hand-drawn illustration style this game targets.
 - **Workflow:**
-  1. Sketch and ink in Krita at 2× or 4× target sprite size (e.g., draw player ship at 192×128 px if final is 96×64 px).
-  2. Export each sprite frame as a numbered PNG sequence: `player_idle_00.png`, `player_idle_01.png`, etc.
-  3. Combine frames into a sprite atlas (see below).
+  1. Sketch and ink in Procreate at 2× or 4× target sprite size (e.g., draw player ship at 192×128 px if final is 96×64 px).
+  2. Name layers consistently with a prefix and zero-padded index: `player_idle_00`, `player_idle_01`, etc.
+  3. Export each sprite frame as a PNG with transparency (File → Share → PNG). For multi-frame sprites, export each layer/group separately.
+  4. Transfer PNGs to PC (AirDrop, iCloud Drive, or USB).
+  5. Combine frames into a sprite atlas (see below).
 
 #### Free Texture Packer (atlas packing)
 
@@ -71,9 +73,9 @@ The game targets hand-drawn pen/pencil art — scanned or tablet-digitized, not 
 
 `AssetManager` will load this format and provide `GetSourceRect(string frameName) → Rectangle`.
 
-#### Aseprite (optional, for frame animation)
+#### Aseprite (optional, for frame animation editing on PC)
 
-If frame-by-frame animation editing becomes important, Aseprite is the best tool. It exports PNG sheets directly and supports `.aseprite` project files. Not required for Phase 0–1.
+If frame-by-frame animation editing becomes important on the PC side, Aseprite is the best tool. It exports PNG sheets directly and supports `.aseprite` project files. Not required for Phase 0–1. Drawing still happens in Procreate; Aseprite would be used for post-processing or tweening if needed.
 
 ---
 
@@ -240,9 +242,9 @@ public static class DebugDraw
 | GemDefinition + Registry    | 0001      | Load shot_normal.json, shot_charged.json        |
 | GemModifierPipeline         | 0001      | Wire into Player shooting (replaces chargeLevel)|
 | GemSystem + default loadout | 0001      | Hard-code slot 0 = shot_normal, slot 1 = shot_charged |
-| Krita art kickoff           | 0007      | Start player ship sketch, enemy A sketch        |
+| Procreate art kickoff       | 0007      | Start player ship sketch, enemy A sketch in Procreate |
 
-**Exit criteria:** Enemies spawn with rarity colors, gem pipeline drives shooting, first Krita sprites in progress.
+**Exit criteria:** Enemies spawn with rarity colors, gem pipeline drives shooting, first Procreate sprites in progress.
 
 ---
 
@@ -261,7 +263,7 @@ public static class DebugDraw
 | Add charge, retreat handlers| 0004      | Expand AI with 2 new node types                 |
 | shoot_at_player handler     | 0004      | Enemy projectile pool + handler                 |
 | Support gems runtime        | 0001      | pierce, homing, damage supports wired up        |
-| Sprite atlas integration    | 0007      | Replace placeholder rectangles with Krita art   |
+| Sprite atlas integration    | 0007      | Replace placeholder rectangles with Procreate art |
 
 **Exit criteria:** Player can clear a wave, collect gems, open the loadout screen, swap gems, and see stat changes take effect in the next wave.
 
@@ -313,7 +315,7 @@ Phase 3
 ## What NOT to Change
 
 - **Do not switch frameworks.** Raylib-cs handles everything in this spec list.
-- **Do not add a GUI editor dependency.** All tooling (Krita, Free Texture Packer, VS Code, ImGui) is additive and optional. The game builds and runs with `dotnet run` at every phase.
+- **Do not add a GUI editor dependency.** All tooling (Procreate, Free Texture Packer, VS Code, ImGui) is additive and optional. The game builds and runs with `dotnet run` at every phase.
 - **Do not break the Update/Draw separation.** ImGui and debug overlays draw in `Draw()` but must never mutate game state.
 - **Do not allocate in the hot loop.** Every new system introduced in Phases 0–3 must pre-allocate its pools at startup.
 
@@ -334,7 +336,7 @@ Systems/
   DebugDraw.cs
 Assets/
   sprites/
-    source/          ← Krita .kra files (not committed, gitignored)
+    source/          ← Procreate exports (.png per frame, not committed, gitignored)
     player.png       ← packed atlas
     player.json      ← frame metadata
     enemies.png
@@ -347,6 +349,6 @@ Assets/
 
 ## Open Questions
 
-1. Should `.kra` source files be committed to the repo (large binary) or kept local with a documented export process?
+1. Should Procreate source files (`.procreate`) be committed to the repo (large binary) or kept local on iPad with a documented export process?
 2. Which ImGui-Raylib bridge implementation should we use — write our own or adopt an existing community one?
 3. Should the level editor be a separate `dotnet run --project LevelEditor` project or toggled inside the main game binary?
