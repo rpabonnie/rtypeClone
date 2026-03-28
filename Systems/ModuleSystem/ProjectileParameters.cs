@@ -1,4 +1,4 @@
-namespace rtypeClone.Systems.GemSystem;
+namespace rtypeClone.Systems.ModuleSystem;
 
 /// <summary>
 /// Value type describing how a projectile behaves.

@@ -8,26 +8,16 @@ This is a **learning project** by a novice in game design. The goal is to explor
 
 **Good ideas, thoughtful direction, and guidance are always welcome.** If you're interested in contributing or have suggestions, jump in!
 
-## Immediate Goals
+## Current Features
 
-### Enemy Levels & Progression
-- **Basic Enemies** — Standard fodder with straightforward behavior
-- **Elite Enemies** — More challenging variants with upgraded capabilities
-- **Bosses** — Major encounters that mark level completion
-
-### Victory Conditions
-- Defeat a required number of enemies throughout the level
-- Survive and defeat the level boss to advance
-
-### Life System
-- **3 lives** per run, **3 hits per life**
-- Enemy collisions destroy most enemy types on impact (except elites and bosses)
-- **Invincibility frames** (3–5 frames) after taking damage to prevent instant death
-
-### Weapon Variety & Power-ups
-- Multiple weapon types (standard shot, charged shot, and variants)
-- Power-up system for both regular and charging modes
-- Collectible items to enhance player capabilities
+- **Side-scrolling combat** with parallax backgrounds and pooled projectiles
+- **Ship module system** — JSON-defined weapon and support modules with tap fire and charge fire modes
+- **Enemy rarity tiers** — Normal, Magic, Rare, Unique with affix modifiers (speed, shields, armor, etc.)
+- **AI profile system** — JSON-driven enemy movement (straight, sine wave, zigzag)
+- **Pause menu** — Escape to pause, Resume / Inventory / Exit
+- **Module Bay** — view/configure weapon slots and stats (controller Start opens directly, F3 enables debug equip)
+- **Debug overlay** — F3 to toggle hitboxes, AI labels, FPS
+- **Controller-first** — Xbox controller is primary input, keyboard/mouse always works too
 
 ## Tech Stack
 
@@ -60,13 +50,13 @@ dotnet clean
 ```
 rtypeClone/
   Program.cs              # Entry point: window init, main loop
-  Core/                   # Core systems: game state, input, object pools
-  Entities/               # Player, enemies, projectiles, bosses, power-ups
-  Systems/                # Collision, spawning, background, audio
-  Assets/                 # Sprites and audio files
+  Core/                   # Game state, input, object pools, asset manager
+  Entities/               # Player, enemies, projectiles, damage numbers
+  Systems/                # Collision, spawning, background, AI, rarity, gems, UI
+  Assets/                 # Sprites, AI profiles, affixes, gem definitions
 ```
 
-See [CLAUDE.md](CLAUDE.md) for the full architecture documentation.
+See [PROJECT-GUIDE.md](PROJECT-GUIDE.md) for the full architecture walkthrough and [CLAUDE.md](CLAUDE.md) for coding standards.
 
 ## Contributing
 

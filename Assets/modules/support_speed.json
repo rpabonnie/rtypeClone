@@ -1,0 +1,9 @@
+{
+  "id": "support_speed",
+  "displayName": "Velocity Booster",
+  "category": "Support",
+  "modifiers": {
+    "speedFlat": 300.0
+  },
+  "requiresTags": ["projectile"]
+}

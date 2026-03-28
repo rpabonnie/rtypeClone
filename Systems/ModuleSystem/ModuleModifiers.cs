@@ -1,10 +1,10 @@
-namespace rtypeClone.Systems.GemSystem;
+namespace rtypeClone.Systems.ModuleSystem;
 
 /// <summary>
-/// Modifiers applied by support gems to a skill gem's base ProjectileParameters.
+/// Modifiers applied by support modules to a weapon module's base ProjectileParameters.
 /// Flat values add, multipliers multiply. Evaluated once on loadout change, not per frame.
 /// </summary>
-public struct GemModifiers
+public struct ModuleModifiers
 {
     public int   DamageFlat;
     public float DamageMultiplier;
@@ -17,7 +17,7 @@ public struct GemModifiers
     public float SpeedFlat;
 
     /// <summary>Identity modifier — changes nothing when applied.</summary>
-    public static GemModifiers None => new()
+    public static ModuleModifiers None => new()
     {
         DamageMultiplier = 1f,
         RadiusMultiplier = 1f,

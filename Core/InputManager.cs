@@ -20,6 +20,17 @@ public class InputManager
     public bool ShootHeld { get; private set; }
     public bool ShootReleased { get; private set; }
 
+    // Menu inputs — split by source so GameState can route correctly
+    public bool PauseMenuPressed { get; private set; }
+    public bool InventoryPressed { get; private set; }
+    public bool MenuPressed { get; private set; }
+    public bool ConfirmPressed { get; private set; }
+    public bool CancelPressed { get; private set; }
+    public bool NavigateUp { get; private set; }
+    public bool NavigateDown { get; private set; }
+    public bool NavigateLeft { get; private set; }
+    public bool NavigateRight { get; private set; }
+
     public void Update()
     {
         Vector2 kbMovement = Vector2.Zero;
@@ -80,5 +91,31 @@ public class InputManager
         // Normalize to prevent diagonal speed boost
         if (Movement.LengthSquared() > 1f)
             Movement = Vector2.Normalize(Movement);
+
+        // Menu / UI navigation inputs (always read from both devices)
+        bool gpAvail = Raylib.IsGamepadAvailable(GamepadIndex);
+
+        // Escape = pause menu; controller Start/Menu = inventory directly
+        PauseMenuPressed = Raylib.IsKeyPressed(KeyboardKey.Escape);
+        InventoryPressed = gpAvail && Raylib.IsGamepadButtonPressed(GamepadIndex, GamepadButton.MiddleRight);
+        MenuPressed = PauseMenuPressed || InventoryPressed;
+
+        ConfirmPressed = Raylib.IsKeyPressed(KeyboardKey.Enter)
+            || (gpAvail && Raylib.IsGamepadButtonPressed(GamepadIndex, GamepadButton.RightFaceDown));
+
+        CancelPressed = Raylib.IsKeyPressed(KeyboardKey.Escape)
+            || (gpAvail && Raylib.IsGamepadButtonPressed(GamepadIndex, GamepadButton.RightFaceRight));
+
+        NavigateUp = Raylib.IsKeyPressed(KeyboardKey.Up) || Raylib.IsKeyPressed(KeyboardKey.W)
+            || (gpAvail && Raylib.IsGamepadButtonPressed(GamepadIndex, GamepadButton.LeftFaceUp));
+
+        NavigateDown = Raylib.IsKeyPressed(KeyboardKey.Down) || Raylib.IsKeyPressed(KeyboardKey.S)
+            || (gpAvail && Raylib.IsGamepadButtonPressed(GamepadIndex, GamepadButton.LeftFaceDown));
+
+        NavigateLeft = Raylib.IsKeyPressed(KeyboardKey.Left) || Raylib.IsKeyPressed(KeyboardKey.A)
+            || (gpAvail && Raylib.IsGamepadButtonPressed(GamepadIndex, GamepadButton.LeftFaceLeft));
+
+        NavigateRight = Raylib.IsKeyPressed(KeyboardKey.Right) || Raylib.IsKeyPressed(KeyboardKey.D)
+            || (gpAvail && Raylib.IsGamepadButtonPressed(GamepadIndex, GamepadButton.LeftFaceRight));
     }
 }

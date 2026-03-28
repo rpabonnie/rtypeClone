@@ -1,7 +1,7 @@
 using System.Numerics;
 using Raylib_cs;
 using rtypeClone.Core;
-using rtypeClone.Systems.GemSystem;
+using rtypeClone.Systems.ModuleSystem;
 
 namespace rtypeClone.Entities;
 
@@ -32,10 +32,13 @@ public class Player : Entity
             _iFrameTimer = Constants.IFrameDuration;
     }
 
+    /// <summary>Active weapon slot index (0..3). Tap fires base, hold+release fires charged.</summary>
+    public int ActiveWeaponSlot;
+
     /// <summary>
-    /// Main update with gem system. Tap fires slot 0 (normal), charge-release fires slot 1 (charged).
+    /// Main update with module system. Tap fires base params, charge-release fires charged params from the same slot.
     /// </summary>
-    public void Update(float dt, InputManager input, ObjectPool<Projectile> bulletPool, GemSystem gemSystem)
+    public void Update(float dt, InputManager input, ObjectPool<Projectile> bulletPool, ModuleSystem moduleSystem)
     {
         // Invincibility timer
         if (_iFrameTimer > 0f)
@@ -46,10 +49,10 @@ public class Player : Entity
         Position.X = Math.Clamp(Position.X, 0f, Constants.ScreenWidth - Width);
         Position.Y = Math.Clamp(Position.Y, 0f, Constants.ScreenHeight - Height);
 
-        // Shooting: tap fires slot 0 immediately, hold charges for slot 1 on release
+        // Shooting: tap fires base parameters, hold charges for charged on release
         if (input.ShootPressed)
         {
-            FireGemBullet(bulletPool, gemSystem, slot: 0);
+            FireBullet(bulletPool, moduleSystem, ActiveWeaponSlot, charged: false);
             _isCharging = true;
             _chargeTimer = 0f;
         }
@@ -61,9 +64,10 @@ public class Player : Entity
 
         if (_isCharging && input.ShootReleased)
         {
-            if (_chargeTimer >= Constants.ChargeTimeLevel1 && gemSystem.HasSkillGem(1))
+            if (_chargeTimer >= Constants.ChargeTimeLevel1
+                && moduleSystem.SlotHasChargedMode(ActiveWeaponSlot))
             {
-                FireGemBullet(bulletPool, gemSystem, slot: 1);
+                FireBullet(bulletPool, moduleSystem, ActiveWeaponSlot, charged: true);
             }
             _isCharging = false;
             _chargeTimer = 0f;
@@ -71,13 +75,15 @@ public class Player : Entity
     }
 
     /// <summary>
-    /// Fire a projectile using gem-resolved parameters from the given skill slot.
+    /// Fire a projectile using resolved parameters from the given weapon slot.
     /// </summary>
-    private void FireGemBullet(ObjectPool<Projectile> pool, GemSystem gemSystem, int slot)
+    private void FireBullet(ObjectPool<Projectile> pool, ModuleSystem moduleSystem, int slot, bool charged)
     {
-        if (!gemSystem.HasSkillGem(slot)) return;
+        if (!moduleSystem.HasWeaponModule(slot)) return;
 
-        ref readonly var param = ref gemSystem.GetActive(slot);
+        ref readonly var param = ref charged
+            ? ref moduleSystem.GetCharged(slot)
+            : ref moduleSystem.GetActive(slot);
         var bullet = pool.Get();
         if (bullet != null)
         {
@@ -90,7 +96,7 @@ public class Player : Entity
 
     public override void Update(float dt)
     {
-        // Use the overload with InputManager + GemSystem instead
+        // Use the overload with InputManager + ModuleSystem instead
     }
 
     public override void Draw()

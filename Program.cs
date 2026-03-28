@@ -10,13 +10,14 @@ public static class Program
         Raylib.InitWindow(Constants.ScreenWidth, Constants.ScreenHeight, "R-Type Clone");
         Raylib.ToggleBorderlessWindowed();
         Raylib.SetTargetFPS(60);
+        Raylib.SetExitKey(KeyboardKey.Null); // Escape is used for pause menu, not window close
 
         AssetManager.Load();
 
         var gameState = new GameState();
         var inputManager = new InputManager();
 
-        while (!Raylib.WindowShouldClose())
+        while (!Raylib.WindowShouldClose() && !gameState.ExitRequested)
         {
             float dt = Raylib.GetFrameTime();
 
