@@ -261,13 +261,13 @@ public class LoadoutScreen
         // Base stats
         ref readonly var baseP = ref moduleSystem.ResolvedParameters[slot];
         int statY = y + 94;
-        Raylib.DrawText($"Tap:  {baseP.Damage} dmg  {baseP.Speed:0} spd", x + 12, statY, 18, Color.LightGray);
+        Raylib.DrawText($"Normal:  {baseP.Damage} dmg  {baseP.Speed:0} spd", x + 12, statY, 18, Color.LightGray);
 
         // Charged stats (if available)
         if (moduleSystem.HasChargedMode[slot])
         {
             ref readonly var chargedP = ref moduleSystem.ResolvedChargedParameters[slot];
-            Raylib.DrawText($"Hold: {chargedP.Damage} dmg  {chargedP.Speed:0} spd  {chargedP.Width:0}x{chargedP.Height:0}",
+            Raylib.DrawText($"Charged: {chargedP.Damage} dmg  {chargedP.Speed:0} spd",
                 x + 12, statY + 22, 18, Color.Orange);
         }
 
