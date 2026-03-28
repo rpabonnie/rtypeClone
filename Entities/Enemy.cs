@@ -1,25 +1,16 @@
 using System.Numerics;
 using Raylib_cs;
 using rtypeClone.Core;
+using rtypeClone.Systems.AiSystem;
+using rtypeClone.Systems.CombatSystem;
 
 namespace rtypeClone.Entities;
 
-public enum EnemyMovePattern
-{
-    Straight,
-    Sine,
-    Zigzag,
-}
-
 public class Enemy : Entity
 {
-    public int Health;
-
-    private EnemyMovePattern _pattern;
-    private float _aliveTimer;        // time since spawn, drives sine wave
-    private float _spawnY;            // original Y for sine offset
-    private float _zigzagTimer;       // countdown to next direction flip
-    private float _zigzagDirection;   // +1 or -1
+    public EnemyHealth Health;
+    public string AiProfileId = "";
+    public EnemyAiState AiState;
 
     public Enemy()
     {
@@ -27,67 +18,67 @@ public class Enemy : Entity
         Height = 32f;
     }
 
-    public void Spawn(Vector2 position, Vector2 velocity, int health = 1,
-                      EnemyMovePattern pattern = EnemyMovePattern.Straight)
+    public void Spawn(Vector2 position, Vector2 velocity, int hp = 1, int shield = 0,
+                      string aiProfileId = "straight")
     {
         Position = position;
         Velocity = velocity;
-        Health = health;
+        Health = EnemyHealth.Create(hp, shield);
+        AiProfileId = aiProfileId;
+        AiState = new EnemyAiState
+        {
+            AliveTimer = 0f,
+            SpawnY = position.Y,
+            ZigzagTimer = Constants.EnemyZigzagInterval,
+            ZigzagDirection = 1f,
+        };
         Active = true;
-        _pattern = pattern;
-        _aliveTimer = 0f;
-        _spawnY = position.Y;
-        _zigzagTimer = Constants.EnemyZigzagInterval;
-        _zigzagDirection = 1f;
     }
+
+    public int TakeDamage(DamageEvent dmg) => Health.ApplyDamage(dmg);
 
     public override void Update(float dt)
     {
-        _aliveTimer += dt;
+        // Movement is now driven by AiSystem via GameState — this is a fallback
+        AiState.AliveTimer += dt;
+        Position += Velocity * dt;
+    }
 
-        switch (_pattern)
-        {
-            case EnemyMovePattern.Straight:
-                Position += Velocity * dt;
-                break;
-
-            case EnemyMovePattern.Sine:
-                Position.X += Velocity.X * dt;
-                Position.Y = _spawnY + MathF.Sin(_aliveTimer * Constants.EnemySineFrequency)
-                             * Constants.EnemySineAmplitude;
-                break;
-
-            case EnemyMovePattern.Zigzag:
-                Position.X += Velocity.X * dt;
-                Position.Y += _zigzagDirection * Constants.EnemyZigzagVerticalSpeed * dt;
-
-                // Clamp to screen bounds
-                if (Position.Y < 0f)
-                {
-                    Position.Y = 0f;
-                    _zigzagDirection = 1f;
-                    _zigzagTimer = Constants.EnemyZigzagInterval;
-                }
-                else if (Position.Y + Height > Constants.ScreenHeight)
-                {
-                    Position.Y = Constants.ScreenHeight - Height;
-                    _zigzagDirection = -1f;
-                    _zigzagTimer = Constants.EnemyZigzagInterval;
-                }
-
-                _zigzagTimer -= dt;
-                if (_zigzagTimer <= 0f)
-                {
-                    _zigzagDirection = -_zigzagDirection;
-                    _zigzagTimer = Constants.EnemyZigzagInterval;
-                }
-                break;
-        }
+    public void UpdateAi(float dt, AiSystem aiSystem, in AiContext ctx)
+    {
+        AiState.AliveTimer += dt;
+        aiSystem.Update(ref Position, ref Velocity, ref AiState, AiProfileId, in ctx);
     }
 
     public override void Draw()
     {
         if (!Active) return;
         Raylib.DrawRectangleV(Position, new Vector2(Width, Height), Color.Red);
+
+        // Health bar for enemies with more than 1 max HP
+        if (Health.MaxHp > 1)
+            DrawHealthBar();
+    }
+
+    private void DrawHealthBar()
+    {
+        const float BarWidth = 48f;
+        const float BarHeight = 5f;
+        float barY = Position.Y - BarHeight - 4f;
+
+        Raylib.DrawRectangleV(new Vector2(Position.X, barY),
+            new Vector2(BarWidth, BarHeight), Color.DarkGray);
+
+        float hpW = BarWidth * Health.HpPercent;
+        Raylib.DrawRectangleV(new Vector2(Position.X, barY),
+            new Vector2(hpW, BarHeight), Color.Green);
+
+        if (Health.HasShield)
+        {
+            float shW = BarWidth * Health.ShieldPercent;
+            Raylib.DrawRectangleV(new Vector2(Position.X, barY),
+                new Vector2(shW, BarHeight),
+                new Color((byte)100, (byte)180, (byte)255, (byte)200));
+        }
     }
 }

@@ -3,7 +3,7 @@
 | Field    | Value                            |
 |----------|----------------------------------|
 | ID       | spec-0003                        |
-| Status   | Draft                            |
+| Status   | In Progress (Phase 0 complete)   |
 | Author   | rpabo                            |
 | Created  | 2026-03-25                       |
 | Updated  | 2026-03-25                       |
@@ -37,10 +37,10 @@ Replace the current `public int Health` field on `Enemy` with a richer `EnemyHea
 // Systems/CombatSystem/DamageType.cs
 public enum DamageType
 {
-    Physical,   // normal and charged shots (default)
-    Energy,     // future beam weapons
-    Fire,       // future fire gems
-    Cold,       // future cold gems
+    NonElemental, // standard lasers and charged shots (default)
+    Energy,       // future beam weapons
+    Fire,         // future fire gems
+    Cold,         // future cold gems
 }
 ```
 
@@ -57,7 +57,7 @@ public readonly struct DamageEvent
     public readonly DamageType Type;
     public readonly bool       BypassShield; // true for pierce/armor-penetrating shots
 
-    public DamageEvent(int amount, DamageType type = DamageType.Physical, bool bypassShield = false)
+    public DamageEvent(int amount, DamageType type = DamageType.NonElemental, bool bypassShield = false)
     {
         Amount       = amount;
         Type         = type;
@@ -198,7 +198,7 @@ public class DamageNumber : Entity
 
     private static Color ColorForType(DamageType t) => t switch
     {
-        DamageType.Physical => Color.White,
+        DamageType.NonElemental => Color.White,
         DamageType.Energy   => new Color((byte)100, (byte)200, (byte)255, (byte)255),
         DamageType.Fire     => Color.Orange,
         DamageType.Cold     => Color.SkyBlue,
@@ -223,7 +223,7 @@ Pool size: `Constants.DamageNumberPoolSize = 64`.
 
 ## Health Bar Rendering
 
-Health bars render only for `Rarity >= Rare`. Drawn in `Enemy.Draw()`:
+Health bars render for any enemy with `MaxHp > 1` (i.e., not fodder). This covers Rare/Unique enemies and any enemy with bonus HP from affixes. Fodder dies in one hit and needs no bar. Drawn in `Enemy.Draw()`:
 
 ```csharp
 private void DrawHealthBar()

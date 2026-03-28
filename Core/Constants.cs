@@ -35,4 +35,7 @@ public static class Constants
     public const float EnemySineFrequency = 2.5f;       // oscillation speed
     public const float EnemyZigzagInterval = 0.8f;      // seconds between direction changes
     public const float EnemyZigzagVerticalSpeed = 150f;  // vertical speed for zigzag
+
+    // Damage numbers
+    public const int DamageNumberPoolSize = 64;
 }

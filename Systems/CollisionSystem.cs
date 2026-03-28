@@ -1,12 +1,15 @@
+using System.Numerics;
 using Raylib_cs;
 using rtypeClone.Core;
 using rtypeClone.Entities;
+using rtypeClone.Systems.CombatSystem;
 
 namespace rtypeClone.Systems;
 
 public class CollisionSystem
 {
-    public void CheckCollisions(Player player, ObjectPool<Projectile> bullets, ObjectPool<Enemy> enemies)
+    public void CheckCollisions(Player player, ObjectPool<Projectile> bullets,
+                                ObjectPool<Enemy> enemies, ObjectPool<DamageNumber> damageNumbers)
     {
         // Bullets vs Enemies
         bullets.ForEachActive((bullet, bi) =>
@@ -16,8 +19,21 @@ public class CollisionSystem
                 if (Raylib.CheckCollisionRecs(bullet.Bounds, enemy.Bounds))
                 {
                     bullets.Return(bi);
-                    enemy.Health -= bullet.Damage;
-                    if (enemy.Health <= 0)
+
+                    var dmg = new DamageEvent(bullet.Damage);
+                    int dealt = enemy.TakeDamage(dmg);
+
+                    // Show damage number only for enemies that survive the hit (multi-HP)
+                    if (enemy.Health.IsAlive && enemy.Health.MaxHp > 1)
+                    {
+                        var numPos = new Vector2(enemy.Position.X + enemy.Width / 2f,
+                                                 enemy.Position.Y - 10f);
+                        var dn = damageNumbers.Get();
+                        if (dn != null)
+                            dn.Activate(numPos, dmg.Amount, dmg.Type);
+                    }
+
+                    if (!enemy.Health.IsAlive)
                     {
                         enemies.Return(ei);
                         player.Score += 100;

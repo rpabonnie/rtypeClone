@@ -132,4 +132,9 @@ public class Player : Entity
 
         Raylib.DrawRectangleV(Position, new Vector2(Width, Height), Color.Blue);
     }
+
+    public void DrawDebugHitbox()
+    {
+        Raylib.DrawRectangleLinesEx(Bounds, 1f, Color.Lime);
+    }
 }
