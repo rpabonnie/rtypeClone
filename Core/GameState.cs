@@ -107,6 +107,7 @@ public class GameState
         _bulletPool.ForEachActive((bullet, i) =>
         {
             bullet.Update(dt);
+            bullet.UpdateHoming(dt, _enemyPool);
             if (bullet.IsOffScreen())
                 _bulletPool.Return(i);
         });

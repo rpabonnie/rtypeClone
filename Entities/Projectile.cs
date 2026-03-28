@@ -11,6 +11,9 @@ public class Projectile : Entity
     public int Pierce;
     public int HitsRemaining;
     public int ChargeLevel;
+    public bool Homing;
+    public float HomingStrength;
+    public float Speed; // Cached for homing (needs to maintain constant speed while turning)
     private Rectangle _srcRect;
 
     /// <summary>
@@ -19,15 +22,17 @@ public class Projectile : Entity
     public void Spawn(Vector2 position, in ProjectileParameters param)
     {
         Position = position;
+        Speed = param.Speed;
         Velocity = new Vector2(param.Speed, 0f);
         Width = param.Width;
         Height = param.Height;
         Damage = param.Damage;
         Pierce = param.Pierce;
-        HitsRemaining = param.Pierce + 1; // pierce=0 means 1 hit then despawn, pierce=2 means 3 hits
+        HitsRemaining = param.Pierce + 1;
+        Homing = param.Homing;
+        HomingStrength = param.HomingStrength;
         Active = true;
 
-        // Determine visual based on size (charged shots are larger)
         if (param.Width >= 20f)
         {
             ChargeLevel = 1;
@@ -41,14 +46,16 @@ public class Projectile : Entity
     }
 
     /// <summary>
-    /// Legacy spawn path — still used internally for backward compatibility.
-    /// Will be removed once all callers use ProjectileParameters.
+    /// Legacy spawn path — kept for backward compatibility.
     /// </summary>
     public void Spawn(Vector2 position, Vector2 velocity, int chargeLevel = 0)
     {
         Position = position;
         Velocity = velocity;
+        Speed = velocity.Length();
         ChargeLevel = chargeLevel;
+        Homing = false;
+        HomingStrength = 0f;
         Active = true;
 
         if (chargeLevel >= 1)
@@ -70,6 +77,50 @@ public class Projectile : Entity
     public override void Update(float dt)
     {
         Position += Velocity * dt;
+    }
+
+    /// <summary>
+    /// Steers this projectile toward the nearest enemy. Called after Update()
+    /// only for homing projectiles. Rotates velocity toward target while
+    /// maintaining constant speed.
+    /// </summary>
+    public void UpdateHoming(float dt, ObjectPool<Enemy> enemies)
+    {
+        if (!Homing || !Active) return;
+
+        // Find nearest active enemy
+        var bulletCenter = new Vector2(Position.X + Width / 2f, Position.Y + Height / 2f);
+        float bestDistSq = float.MaxValue;
+        Vector2 bestTarget = default;
+        bool found = false;
+
+        enemies.ForEachActive((enemy, _) =>
+        {
+            var enemyCenter = new Vector2(enemy.Position.X + enemy.Width / 2f,
+                                          enemy.Position.Y + enemy.Height / 2f);
+            float distSq = Vector2.DistanceSquared(bulletCenter, enemyCenter);
+            if (distSq < bestDistSq)
+            {
+                bestDistSq = distSq;
+                bestTarget = enemyCenter;
+                found = true;
+            }
+        });
+
+        if (!found) return;
+
+        // Steer toward target: blend current direction with desired direction
+        var desired = Vector2.Normalize(bestTarget - bulletCenter);
+        var current = Velocity.LengthSquared() > 0.001f
+            ? Vector2.Normalize(Velocity)
+            : new Vector2(1f, 0f);
+
+        // Lerp direction by homing strength (higher = tighter tracking)
+        var blended = Vector2.Lerp(current, desired, HomingStrength * dt);
+        if (blended.LengthSquared() > 0.001f)
+        {
+            Velocity = Vector2.Normalize(blended) * Speed;
+        }
     }
 
     public override void Draw()
