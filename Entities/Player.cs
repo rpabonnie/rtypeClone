@@ -75,7 +75,8 @@ public class Player : Entity
     }
 
     /// <summary>
-    /// Fire a projectile using resolved parameters from the given weapon slot.
+    /// Fire projectile(s) using resolved parameters from the given weapon slot.
+    /// Handles multishot (Count > 1) by fanning bullets across SpreadAngleDeg.
     /// </summary>
     private void FireBullet(ObjectPool<Projectile> pool, ModuleSystem moduleSystem, int slot, bool charged)
     {
@@ -84,13 +85,35 @@ public class Player : Entity
         ref readonly var param = ref charged
             ? ref moduleSystem.GetCharged(slot)
             : ref moduleSystem.GetActive(slot);
-        var bullet = pool.Get();
-        if (bullet != null)
+
+        int count = Math.Max(param.Count, 1);
+        float totalSpread = param.SpreadAngleDeg * MathF.PI / 180f; // convert to radians
+        float startAngle = count > 1 ? -totalSpread / 2f : 0f;
+        float step = count > 1 ? totalSpread / (count - 1) : 0f;
+
+        var nosePos = new Vector2(Position.X + Width, Position.Y + Height / 2f);
+
+        for (int i = 0; i < count; i++)
         {
+            var bullet = pool.Get();
+            if (bullet == null) break;
+
+            float angle = startAngle + step * i;
             bullet.Spawn(
-                new Vector2(Position.X + Width, Position.Y + Height / 2f - param.Height / 2f),
+                new Vector2(nosePos.X, nosePos.Y - param.Height / 2f),
                 in param
             );
+
+            // Apply spread angle to velocity if non-zero
+            if (MathF.Abs(angle) > 0.001f)
+            {
+                float cos = MathF.Cos(angle);
+                float sin = MathF.Sin(angle);
+                bullet.Velocity = new Vector2(
+                    param.Speed * cos,
+                    param.Speed * sin
+                );
+            }
         }
     }
 

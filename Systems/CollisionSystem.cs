@@ -16,31 +16,40 @@ public class CollisionSystem
         // Bullets vs Enemies
         bullets.ForEachActive((bullet, bi) =>
         {
+            if (!bullet.Active) return; // Already consumed by pierce logic
+
             enemies.ForEachActive((enemy, ei) =>
             {
+                if (!bullet.Active) return; // Consumed during this sweep
+                if (!enemy.Active) return;
+
                 if (Raylib.CheckCollisionRecs(bullet.Bounds, enemy.Bounds))
                 {
-                    bullets.Return(bi);
-
                     var dmg = new DamageEvent(bullet.Damage);
                     int dealt = enemy.TakeDamage(dmg);
 
-                    // Show damage number only for enemies that survive the hit (multi-HP)
-                    if (enemy.Health.IsAlive && enemy.Health.MaxHp > 1)
+                    // Show damage number for any hit that deals damage
+                    if (dealt > 0)
                     {
                         var numPos = new Vector2(enemy.Position.X + enemy.Width / 2f,
                                                  enemy.Position.Y - 10f);
                         var dn = damageNumbers.Get();
                         if (dn != null)
-                            dn.Activate(numPos, dmg.Amount, dmg.Type);
+                            dn.Activate(numPos, dealt, dmg.Type);
                     }
 
                     if (!enemy.Health.IsAlive)
                     {
                         enemies.Return(ei);
-                        // Score is base × rarity multiplier
                         int score = (int)(BaseKillScore * RarityConstants.ScoreMultiplier(enemy.Rarity));
                         player.Score += score;
+                    }
+
+                    // Pierce: decrement hits remaining, despawn when exhausted
+                    bullet.HitsRemaining--;
+                    if (bullet.HitsRemaining <= 0)
+                    {
+                        bullets.Return(bi);
                     }
                 }
             });
