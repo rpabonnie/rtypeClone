@@ -1,0 +1,10 @@
+{
+  "id": "fast",
+  "displayName": "Swiftness",
+  "description": "Moves 60% faster.",
+  "incompatibleWith": [],
+  "allowedRarities": ["Magic", "Rare", "Unique"],
+  "modifiers": {
+    "speedMultiplier": 1.6
+  }
+}

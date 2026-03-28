@@ -1,0 +1,10 @@
+{
+  "id": "splitter",
+  "displayName": "Splitter",
+  "description": "Splits into 2 enemies one tier lower on death.",
+  "incompatibleWith": ["splitter"],
+  "allowedRarities": ["Rare", "Unique"],
+  "modifiers": {
+    "splitsOnDeath": 2
+  }
+}

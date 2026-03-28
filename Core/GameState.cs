@@ -3,6 +3,8 @@ using Raylib_cs;
 using rtypeClone.Entities;
 using rtypeClone.Systems;
 using rtypeClone.Systems.AiSystem;
+using rtypeClone.Systems.GemSystem;
+using rtypeClone.Systems.RaritySystem;
 
 namespace rtypeClone.Core;
 
@@ -16,6 +18,8 @@ public class GameState
     private readonly WaveSpawner _waveSpawner;
     private readonly CollisionSystem _collisionSystem;
     private readonly AiSystem _aiSystem;
+    private readonly AffixRegistry _affixRegistry;
+    private readonly GemSystem _gemSystem;
 
     public bool DebugOverlay;
 
@@ -29,6 +33,8 @@ public class GameState
         _waveSpawner = new WaveSpawner();
         _collisionSystem = new CollisionSystem();
         _aiSystem = new AiSystem("Assets/ai_profiles");
+        _affixRegistry = new AffixRegistry("Assets/affixes");
+        _gemSystem = new GemSystem("Assets/gems");
     }
 
     public void Update(float dt, InputManager input)
@@ -42,8 +48,8 @@ public class GameState
             DebugOverlay = !DebugOverlay;
 
         _background.Update(dt);
-        _player.Update(dt, input, _bulletPool);
-        _waveSpawner.Update(dt, _enemyPool);
+        _player.Update(dt, input, _bulletPool, _gemSystem);
+        _waveSpawner.Update(dt, _enemyPool, _affixRegistry);
 
         var aiCtx = new AiContext(dt, _player.Position, Constants.ScreenWidth, Constants.ScreenHeight);
 

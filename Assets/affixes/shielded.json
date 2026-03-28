@@ -1,0 +1,10 @@
+{
+  "id": "shielded",
+  "displayName": "Shielded",
+  "description": "Has a damage-absorbing shield layer.",
+  "incompatibleWith": [],
+  "allowedRarities": ["Magic", "Rare", "Unique"],
+  "modifiers": {
+    "shieldHp": 5
+  }
+}

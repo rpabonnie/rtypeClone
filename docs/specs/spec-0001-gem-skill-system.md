@@ -3,10 +3,10 @@
 | Field    | Value                            |
 |----------|----------------------------------|
 | ID       | spec-0001                        |
-| Status   | Draft                            |
+| Status   | In Progress                      |
 | Author   | rpabo                            |
 | Created  | 2026-03-25                       |
-| Updated  | 2026-03-25                       |
+| Updated  | 2026-03-27                       |
 
 ## Overview
 

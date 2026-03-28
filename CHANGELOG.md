@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] — Phase 1: Rarity + Gem Data Model
+
+### Added
+- **EnemyRarity enum** (`Entities/EnemyRarity.cs`) — `Normal`, `Magic`, `Rare`, `Unique` tiers with per-rarity colors, score multipliers, affix count ranges, and `DemoteOneTier()` for split children.
+- **AffixDefinition + AffixModifiers** (`Systems/RaritySystem/`) — data model for enemy modifiers loaded from `Assets/affixes/*.json`. `AffixModifiers` struct supports multiplicative/additive combining with zero allocation.
+- **AffixRegistry** (`Systems/RaritySystem/AffixRegistry.cs`) — loads affix JSONs at startup with pre-built per-rarity lookup lists.
+- **RarityRoller** (`Systems/RaritySystem/RarityRoller.cs`) — weighted random rarity draw with per-wave escalation (later waves shift toward higher tiers). Span-based affix rolling with incompatibility checks. Builds display names from affix combinations.
+- **5 starter affix JSONs** — `fast` (60% speed), `shielded` (5 shield HP), `splitter` (splits on death), `armored` (50% phys reduction), `regenerating` (1 HP/sec).
+- **Unique enemy preset** — `the_guardian.json` in `Assets/uniques/`.
+- **GemSystem** (`Systems/GemSystem/`) — PoE-style gem skill system with:
+  - `ProjectileParameters` struct with `DefaultNormal` / `DefaultCharged` presets.
+  - `GemModifiers` struct for support gem effects.
+  - `GemDefinition` class with `GemCategory` and `SkillCategory` enums.
+  - `GemRegistry` loading from `Assets/gems/*.json`.
+  - `GemModifierPipeline` — resolves skill + support gems into cached `ProjectileParameters`.
+  - `PlayerLoadout` — 4 skill slots × 2 support slots (12 sockets total).
+  - `GemSystem` — owns registry, loadout, and resolved parameter cache.
+- **Starter gem JSONs** — `shot_normal.json`, `shot_charged.json`.
+
+### Changed
+- **Enemy** — gains `Rarity` field and `DisplayName` string. `Draw()` uses rarity color instead of hard-coded `Color.Red`. Magic/Rare/Unique enemies show name label above them.
+- **WaveSpawner** — uses `RarityRoller` to assign rarity and affixes on spawn. Tracks wave number; rarity weights escalate each wave. Higher-rarity enemies get more HP. Affix modifiers (speed, shield) applied at spawn.
+- **CollisionSystem** — kill score uses `RarityConstants.ScoreMultiplier()` (×2 Magic, ×5 Rare, ×10 Unique).
+- **Player** — `Update()` accepts `GemSystem` parameter. `FireBullet()` replaced by `FireGemBullet()` which reads resolved `ProjectileParameters` from gem system. Slot 0 = tap fire (normal), slot 1 = charge-release (charged).
+- **Projectile** — new `Spawn(position, ProjectileParameters)` overload. Legacy `Spawn(position, velocity, chargeLevel)` kept for backward compatibility.
+- **GameState** — creates and owns `AffixRegistry` and `GemSystem`. Passes them to `WaveSpawner.Update()` and `Player.Update()`.
+
+---
+
 ## [Unreleased] — Phase 0: Foundation
 
 ### Added

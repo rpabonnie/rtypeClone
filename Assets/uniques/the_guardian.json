@@ -1,0 +1,10 @@
+{
+  "id": "the_guardian",
+  "displayName": "The Guardian",
+  "rarity": "Unique",
+  "baseHealth": 40,
+  "baseSpeed": 150.0,
+  "aiProfileId": "boss_charge",
+  "affixes": ["shielded", "regenerating"],
+  "dropTableId": "unique_guardian"
+}

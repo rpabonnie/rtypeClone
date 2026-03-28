@@ -8,6 +8,8 @@ namespace rtypeClone.Systems;
 
 public class CollisionSystem
 {
+    private const int BaseKillScore = 100;
+
     public void CheckCollisions(Player player, ObjectPool<Projectile> bullets,
                                 ObjectPool<Enemy> enemies, ObjectPool<DamageNumber> damageNumbers)
     {
@@ -36,7 +38,9 @@ public class CollisionSystem
                     if (!enemy.Health.IsAlive)
                     {
                         enemies.Return(ei);
-                        player.Score += 100;
+                        // Score is base × rarity multiplier
+                        int score = (int)(BaseKillScore * RarityConstants.ScoreMultiplier(enemy.Rarity));
+                        player.Score += score;
                     }
                 }
             });

@@ -1,0 +1,10 @@
+{
+  "id": "armored",
+  "displayName": "Armored",
+  "description": "50% physical damage reduction.",
+  "incompatibleWith": [],
+  "allowedRarities": ["Magic", "Rare", "Unique"],
+  "modifiers": {
+    "physicalDamageReduction": 0.5
+  }
+}
