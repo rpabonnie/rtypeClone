@@ -3,10 +3,18 @@ using Raylib_cs;
 using rtypeClone.Entities;
 using rtypeClone.Systems;
 using rtypeClone.Systems.AiSystem;
-using rtypeClone.Systems.GemSystem;
+using rtypeClone.Systems.ModuleSystem;
 using rtypeClone.Systems.RaritySystem;
+using rtypeClone.Systems.UI;
 
 namespace rtypeClone.Core;
+
+public enum GameScene
+{
+    Playing,
+    PauseMenu,
+    Inventory
+}
 
 public class GameState
 {
@@ -19,9 +27,16 @@ public class GameState
     private readonly CollisionSystem _collisionSystem;
     private readonly AiSystem _aiSystem;
     private readonly AffixRegistry _affixRegistry;
-    private readonly GemSystem _gemSystem;
+    private readonly ModuleSystem _moduleSystem;
+    private readonly PauseMenu _pauseMenu;
+    private readonly LoadoutScreen _loadoutScreen;
 
+    public GameScene Scene { get; private set; } = GameScene.Playing;
     public bool DebugOverlay;
+    public bool ExitRequested { get; private set; }
+
+    // Track whether MenuPressed was already consumed this frame to avoid double-toggle
+    private bool _menuConsumed;
 
     public GameState()
     {
@@ -34,12 +49,14 @@ public class GameState
         _collisionSystem = new CollisionSystem();
         _aiSystem = new AiSystem("Assets/ai_profiles");
         _affixRegistry = new AffixRegistry("Assets/affixes");
-        _gemSystem = new GemSystem("Assets/gems");
+        _moduleSystem = new ModuleSystem("Assets/modules");
+        _pauseMenu = new PauseMenu();
+        _loadoutScreen = new LoadoutScreen();
     }
 
     public void Update(float dt, InputManager input)
     {
-        // Toggle debug overlay
+        // Toggle debug overlay (works in all scenes)
         if (Raylib.IsKeyPressed(KeyboardKey.F3))
             DebugOverlay = !DebugOverlay;
         if (Raylib.IsGamepadAvailable(0)
@@ -47,8 +64,42 @@ public class GameState
             && Raylib.IsGamepadButtonPressed(0, GamepadButton.RightThumb))
             DebugOverlay = !DebugOverlay;
 
+        _menuConsumed = false;
+
+        switch (Scene)
+        {
+            case GameScene.Playing:
+                UpdatePlaying(dt, input);
+                break;
+            case GameScene.PauseMenu:
+                UpdatePauseMenu(input);
+                break;
+            case GameScene.Inventory:
+                UpdateInventory(input);
+                break;
+        }
+    }
+
+    private void UpdatePlaying(float dt, InputManager input)
+    {
+        // Controller Start/Menu → inventory directly; Keyboard Escape → pause menu
+        if (input.InventoryPressed)
+        {
+            _loadoutScreen.Reset();
+            Scene = GameScene.Inventory;
+            _menuConsumed = true;
+            return;
+        }
+        if (input.PauseMenuPressed)
+        {
+            _pauseMenu.Reset();
+            Scene = GameScene.PauseMenu;
+            _menuConsumed = true;
+            return;
+        }
+
         _background.Update(dt);
-        _player.Update(dt, input, _bulletPool, _gemSystem);
+        _player.Update(dt, input, _bulletPool, _moduleSystem);
         _waveSpawner.Update(dt, _enemyPool, _affixRegistry);
 
         var aiCtx = new AiContext(dt, _player.Position, Constants.ScreenWidth, Constants.ScreenHeight);
@@ -77,7 +128,59 @@ public class GameState
         _collisionSystem.CheckCollisions(_player, _bulletPool, _enemyPool, _damageNumberPool);
     }
 
+    private void UpdatePauseMenu(InputManager input)
+    {
+        // Escape toggles back to playing
+        if (input.MenuPressed && !_menuConsumed)
+        {
+            Scene = GameScene.Playing;
+            return;
+        }
+
+        var result = _pauseMenu.Update(input);
+        switch (result)
+        {
+            case PauseMenuResult.Resume:
+                Scene = GameScene.Playing;
+                break;
+            case PauseMenuResult.Inventory:
+                _loadoutScreen.Reset();
+                Scene = GameScene.Inventory;
+                break;
+            case PauseMenuResult.Exit:
+                ExitRequested = true;
+                break;
+        }
+    }
+
+    private void UpdateInventory(InputManager input)
+    {
+        _loadoutScreen.Update(input, DebugOverlay, _moduleSystem);
+        if (_loadoutScreen.ShouldClose)
+        {
+            _moduleSystem.RebuildCache();
+            Scene = GameScene.Playing;
+        }
+    }
+
     public void Draw()
+    {
+        // Always draw the game world as background
+        DrawGameWorld();
+
+        // Overlay the active UI scene on top
+        switch (Scene)
+        {
+            case GameScene.PauseMenu:
+                _pauseMenu.Draw();
+                break;
+            case GameScene.Inventory:
+                _loadoutScreen.Draw(_moduleSystem, DebugOverlay);
+                break;
+        }
+    }
+
+    private void DrawGameWorld()
     {
         _background.Draw();
         _player.Draw();

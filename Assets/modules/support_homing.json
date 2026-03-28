@@ -1,0 +1,10 @@
+{
+  "id": "support_homing",
+  "displayName": "Tracking Beacon",
+  "category": "Support",
+  "modifiers": {
+    "homingOverride": true,
+    "homingStrength": 3.0
+  },
+  "requiresTags": ["projectile"]
+}

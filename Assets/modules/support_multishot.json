@@ -1,0 +1,10 @@
+{
+  "id": "support_multishot",
+  "displayName": "Spread Emitter",
+  "category": "Support",
+  "modifiers": {
+    "countDelta": 2,
+    "spreadAngleDeg": 15.0
+  },
+  "requiresTags": ["projectile"]
+}

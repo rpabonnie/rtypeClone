@@ -1,24 +1,39 @@
-namespace rtypeClone.Systems.GemSystem;
+namespace rtypeClone.Systems.ModuleSystem;
 
 /// <summary>
-/// Applies support gems to a base ProjectileParameters.
+/// Applies support modules to a base ProjectileParameters.
 /// Called once when the loadout changes (not per-frame).
-/// Result is cached in GemSystem.ResolvedParameters[slot].
+/// Result is cached in ModuleSystem.ResolvedParameters[slot].
 /// </summary>
-public static class GemModifierPipeline
+public static class ModulePipeline
 {
-    public static ProjectileParameters Resolve(
-        GemDefinition skillGem,
-        ReadOnlySpan<GemDefinition?> supportGems)
+    public static ProjectileParameters ResolveCharged(
+        ModuleDefinition weaponModule,
+        ReadOnlySpan<ModuleDefinition?> supportModules)
     {
-        var p = skillGem.BaseProjectileParameters;
+        return ResolveFromBase(weaponModule.ChargedProjectileParameters, weaponModule.Tags, supportModules);
+    }
 
-        foreach (var sup in supportGems)
+    public static ProjectileParameters Resolve(
+        ModuleDefinition weaponModule,
+        ReadOnlySpan<ModuleDefinition?> supportModules)
+    {
+        return ResolveFromBase(weaponModule.BaseProjectileParameters, weaponModule.Tags, supportModules);
+    }
+
+    private static ProjectileParameters ResolveFromBase(
+        ProjectileParameters baseParams,
+        string[] weaponTags,
+        ReadOnlySpan<ModuleDefinition?> supportModules)
+    {
+        var p = baseParams;
+
+        foreach (var sup in supportModules)
         {
             if (sup == null) continue;
 
-            // Tag compatibility check: support's requiresTags must all be in skill's tags
-            if (!TagsCompatible(skillGem.Tags, sup.RequiresTags))
+            // Tag compatibility check: support's requiresTags must all be in weapon's tags
+            if (!TagsCompatible(weaponTags, sup.RequiresTags))
                 continue;
 
             var mods = sup.Modifiers;
@@ -33,7 +48,7 @@ public static class GemModifierPipeline
         return p;
     }
 
-    private static void Apply(ref ProjectileParameters p, in GemModifiers m)
+    private static void Apply(ref ProjectileParameters p, in ModuleModifiers m)
     {
         // Flat additions first, then multipliers
         p.Damage += m.DamageFlat;
@@ -53,14 +68,14 @@ public static class GemModifierPipeline
         p.SpreadAngleDeg += m.SpreadAngleDeg;
     }
 
-    private static bool TagsCompatible(string[] skillTags, string[] requiredTags)
+    private static bool TagsCompatible(string[] weaponTags, string[] requiredTags)
     {
         if (requiredTags.Length == 0) return true;
 
         foreach (var req in requiredTags)
         {
             bool found = false;
-            foreach (var tag in skillTags)
+            foreach (var tag in weaponTags)
             {
                 if (string.Equals(tag, req, StringComparison.OrdinalIgnoreCase))
                 {

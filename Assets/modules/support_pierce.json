@@ -1,0 +1,9 @@
+{
+  "id": "support_pierce",
+  "displayName": "Penetrator Lens",
+  "category": "Support",
+  "modifiers": {
+    "pierceDelta": 2
+  },
+  "requiresTags": ["projectile"]
+}

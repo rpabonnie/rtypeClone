@@ -10,7 +10,10 @@ dotnet run      # Build and run the game
 **Controls:**
 - **Keyboard:** WASD/arrows to move, Space/mouse to shoot (hold to charge)
 - **Xbox controller:** Left stick to move, A button to shoot (hold to charge)
+- **Escape:** Open pause menu (Resume / Inventory / Exit)
+- **Controller Start/Menu:** Open Module Bay (loadout) directly
 - **F3** (or both thumbsticks): Toggle debug overlay
+- **F3 + A/Enter in Module Bay:** Debug module picker (equip any registered module)
 
 ## Architecture Overview
 
@@ -24,9 +27,9 @@ All game objects inherit from `Entity` (position, velocity, bounds, active flag)
 
 | Entity       | File                      | Notes                                           |
 |-------------|---------------------------|-------------------------------------------------|
-| Player      | `Entities/Player.cs`      | Movement, gem-driven shooting, i-frames         |
+| Player      | `Entities/Player.cs`      | Movement, module-driven shooting, i-frames      |
 | Enemy       | `Entities/Enemy.cs`       | AI-driven, rarity tiers, affix modifiers        |
-| Projectile  | `Entities/Projectile.cs`  | Gem-parameterized bullets (pooled)              |
+| Projectile  | `Entities/Projectile.cs`  | Module-parameterized bullets (pooled)           |
 | DamageNumber| `Entities/DamageNumber.cs`| Floating damage text (pooled)                   |
 
 ### Object Pooling
@@ -60,15 +63,26 @@ Magic and Rare enemies receive random affixes (speed boost, shields, armor, etc.
 
 **Key types:** `EnemyRarity` enum, `RarityConstants`, `AffixDefinition`, `AffixModifiers`, `AffixRegistry`, `RarityRoller`.
 
-### Gem Skill System
+### Ship Module System
 
-Player shooting is driven by a PoE-style gem system. The player has 4 skill slots, each with 2 linked support gem slots (12 sockets total). Gem definitions are loaded from `Assets/gems/*.json`.
+Player weapons are driven by a modular system. The player has 4 weapon slots, each with 2 linked support module slots (12 sockets total). Module definitions are loaded from `Assets/modules/*.json`.
 
-The `GemModifierPipeline` resolves a skill gem + its support gems into a cached `ProjectileParameters` struct. This resolution happens once on loadout change, not per frame. `Player.FireGemBullet()` reads the cached parameters to spawn projectiles.
+Each shot-type weapon module defines both a **tap fire** (base parameters) and a **charge fire** (charged parameters) in the same definition. Tap shoots immediately; holding and releasing fires the charged version. The `ModulePipeline` resolves a weapon module + its support modules into cached `ProjectileParameters` for both modes. Resolution happens once on loadout change, not per frame.
 
-**Default loadout:** Slot 0 = `shot_normal` (tap fire), Slot 1 = `shot_charged` (charge-release).
+**Default loadout:** Slot 0 = `shot_normal` ("Standard Blaster" — tap = fast small bullet, charge = slow large bullet).
 
-**Key types:** `ProjectileParameters`, `GemDefinition`, `GemRegistry`, `GemModifierPipeline`, `PlayerLoadout`, `GemSystem`.
+**Available support modules:** Amplifier Coil (+dmg), Penetrator Lens (+pierce), Velocity Booster (+speed), Spread Emitter (+multishot), Tracking Beacon (homing).
+
+**Key types:** `ProjectileParameters`, `ModuleDefinition`, `ModuleRegistry`, `ModulePipeline`, `PlayerLoadout`, `ModuleSystem`.
+
+### UI Scenes
+
+The game supports three scenes: `Playing`, `PauseMenu`, and `Inventory`.
+
+- **Pause menu** — Escape (keyboard) opens a dim overlay with Resume, Inventory, and Exit. D-pad/arrow navigation, A/Enter to select.
+- **Module Bay** (loadout screen) — Controller Start opens directly. Shows 4 weapon slots in a 2×2 grid with module names, tap/charged stats, and support slot status. Cursor navigates both weapon and support sub-slots.
+- **Debug module picker** — when F3 debug overlay is active, pressing A/Enter on any slot opens a filtered list of all registered modules. Allows equipping any module or clearing slots for testing.
+- Game world renders behind menus but freezes while paused.
 
 ### Debug Overlay
 
@@ -76,6 +90,7 @@ Press **F3** to toggle. Shows:
 - Green hitbox outlines on all entities
 - Yellow AI profile label above each enemy
 - Frame time (ms) and FPS in top-right corner
+- Enables debug module picker in Module Bay
 
 ### Sprite Atlas System
 
@@ -87,7 +102,7 @@ Press **F3** to toggle. Shows:
 Program.cs                          Entry point only
 Core/
   Constants.cs                      All magic numbers
-  GameState.cs                      Game loop orchestrator
+  GameState.cs                      Game loop orchestrator + scene management
   InputManager.cs                   Controller + keyboard abstraction
   ObjectPool.cs                     Generic object pool
   AssetManager.cs                   Texture loading + atlas system
@@ -97,9 +112,8 @@ Entities/
   Enemy.cs                          Enemy (AI-driven)
   Projectile.cs                     Bullets (pooled)
   EnemyHealth.cs                    HP + shield struct
-  DamageNumber.cs                   Floating damage text (pooled)
-Entities/
   EnemyRarity.cs                    Rarity enum + constants
+  DamageNumber.cs                   Floating damage text (pooled)
 Systems/
   CollisionSystem.cs                Collision detection + rarity score
   ScrollingBackground.cs            Parallax background
@@ -126,18 +140,21 @@ Systems/
     AffixModifiers.cs               Combinable modifier struct
     AffixRegistry.cs                JSON affix loader
     RarityRoller.cs                 Weighted rarity + affix rolling
-  GemSystem/
+  ModuleSystem/
     ProjectileParameters.cs         Projectile stats struct
-    GemModifiers.cs                 Support gem modifier struct
-    GemDefinition.cs                Gem data model + enums
-    GemRegistry.cs                  JSON gem loader
-    GemModifierPipeline.cs          Skill + support → resolved params
+    ModuleModifiers.cs              Support module modifier struct
+    ModuleDefinition.cs             Module data model + enums
+    ModuleRegistry.cs               JSON module loader
+    ModulePipeline.cs               Weapon + support → resolved params
     PlayerLoadout.cs                4×3 socket grid
-    GemSystem.cs                    Registry + loadout + cache owner
+    ModuleSystem.cs                 Registry + loadout + cache owner
+  UI/
+    PauseMenu.cs                    Pause overlay (Resume/Inventory/Exit)
+    LoadoutScreen.cs                Module Bay (2×2 grid + debug picker)
 Assets/
   ai_profiles/                      AI profile JSON files
   affixes/                          Enemy affix JSON files
-  gems/                             Gem definition JSON files
+  modules/                          Ship module JSON files
   uniques/                          Unique enemy preset JSON files
   M484BulletCollection1.png         Bullet sprite sheet
 ```
@@ -147,6 +164,6 @@ Assets/
 Per spec-0007, the project follows four phases:
 
 - **Phase 0 (complete):** EnemyHealth, AI profiles, debug overlay, atlas loader
-- **Phase 1 (current):** Enemy rarity + affixes, gem data model, gem-driven shooting
-- **Phase 2:** Drop tables, gem inventory, loadout screen, enemy shooting AI
+- **Phase 1 (complete):** Enemy rarity + affixes, module data model, module-driven shooting, unified tap + charge
+- **Phase 2 (current):** Pause menu, Module Bay, scene management, debug module picker, support modules. Next: drop tables, enemy shooting AI
 - **Phase 3:** Level editor (ImGui), full AI handler set, content pass

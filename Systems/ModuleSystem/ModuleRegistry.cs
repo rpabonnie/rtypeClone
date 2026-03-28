@@ -1,15 +1,15 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace rtypeClone.Systems.GemSystem;
+namespace rtypeClone.Systems.ModuleSystem;
 
 /// <summary>
-/// Loads all GemDefinitions from Assets/gems/*.json at startup.
+/// Loads all ModuleDefinitions from Assets/modules/*.json at startup.
 /// Read-only after initialization — no locks needed.
 /// </summary>
-public class GemRegistry
+public class ModuleRegistry
 {
-    private readonly Dictionary<string, GemDefinition> _gems = new();
+    private readonly Dictionary<string, ModuleDefinition> _modules = new();
 
     private static readonly JsonSerializerOptions JsonOpts = new()
     {
@@ -18,41 +18,43 @@ public class GemRegistry
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
     };
 
-    public GemRegistry(string gemsDirectory)
+    public ModuleRegistry(string modulesDirectory)
     {
-        if (!Directory.Exists(gemsDirectory))
+        if (!Directory.Exists(modulesDirectory))
             return;
 
-        foreach (var file in Directory.GetFiles(gemsDirectory, "*.json"))
+        foreach (var file in Directory.GetFiles(modulesDirectory, "*.json"))
         {
             var json = File.ReadAllText(file);
-            var raw = JsonSerializer.Deserialize<GemJsonModel>(json, JsonOpts);
+            var raw = JsonSerializer.Deserialize<ModuleJsonModel>(json, JsonOpts);
             if (raw?.Id == null) continue;
 
-            var def = new GemDefinition
+            var def = new ModuleDefinition
             {
                 Id = raw.Id,
                 DisplayName = raw.DisplayName ?? raw.Id,
                 Category = raw.Category,
-                SkillCategory = raw.SkillCategory,
+                WeaponCategory = raw.WeaponCategory,
                 BaseProjectileParameters = raw.BaseProjectileParameters ?? ProjectileParameters.DefaultNormal,
+                ChargedProjectileParameters = raw.ChargedProjectileParameters ?? default,
+                HasChargedMode = raw.ChargedProjectileParameters != null,
                 Modifiers = ConvertModifiers(raw.Modifiers),
                 RequiresTags = raw.RequiresTags ?? [],
                 Tags = raw.Tags ?? []
             };
-            _gems[def.Id] = def;
+            _modules[def.Id] = def;
         }
     }
 
-    public GemDefinition Get(string id) => _gems[id];
-    public bool TryGet(string id, out GemDefinition? def) => _gems.TryGetValue(id, out def);
-    public IReadOnlyCollection<GemDefinition> All => _gems.Values;
-    public int Count => _gems.Count;
+    public ModuleDefinition Get(string id) => _modules[id];
+    public bool TryGet(string id, out ModuleDefinition? def) => _modules.TryGetValue(id, out def);
+    public IReadOnlyCollection<ModuleDefinition> All => _modules.Values;
+    public int Count => _modules.Count;
 
-    private static GemModifiers ConvertModifiers(GemModifiersJson? m)
+    private static ModuleModifiers ConvertModifiers(ModuleModifiersJson? m)
     {
-        if (m == null) return GemModifiers.None;
-        return new GemModifiers
+        if (m == null) return ModuleModifiers.None;
+        return new ModuleModifiers
         {
             DamageFlat = m.DamageFlat ?? 0,
             DamageMultiplier = m.DamageMultiplier ?? 1f,
@@ -68,19 +70,20 @@ public class GemRegistry
 
     // ── JSON deserialization models (nullable for optional fields) ──
 
-    private class GemJsonModel
+    private class ModuleJsonModel
     {
         public string? Id { get; set; }
         public string? DisplayName { get; set; }
-        public GemCategory Category { get; set; }
-        public SkillCategory? SkillCategory { get; set; }
+        public ModuleCategory Category { get; set; }
+        public WeaponCategory? WeaponCategory { get; set; }
         public ProjectileParameters? BaseProjectileParameters { get; set; }
-        public GemModifiersJson? Modifiers { get; set; }
+        public ProjectileParameters? ChargedProjectileParameters { get; set; }
+        public ModuleModifiersJson? Modifiers { get; set; }
         public string[]? RequiresTags { get; set; }
         public string[]? Tags { get; set; }
     }
 
-    private class GemModifiersJson
+    private class ModuleModifiersJson
     {
         public int? DamageFlat { get; set; }
         public float? DamageMultiplier { get; set; }
