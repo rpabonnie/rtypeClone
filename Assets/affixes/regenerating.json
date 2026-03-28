@@ -1,0 +1,10 @@
+{
+  "id": "regenerating",
+  "displayName": "Regenerating",
+  "description": "Regenerates 1 HP per second.",
+  "incompatibleWith": [],
+  "allowedRarities": ["Rare", "Unique"],
+  "modifiers": {
+    "hpRegenPerSecond": 1.0
+  }
+}

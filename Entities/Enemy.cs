@@ -11,6 +11,13 @@ public class Enemy : Entity
     public EnemyHealth Health;
     public string AiProfileId = "";
     public EnemyAiState AiState;
+    public EnemyRarity Rarity;
+
+    /// <summary>
+    /// Display name shown above Magic/Rare/Unique enemies.
+    /// Built from affix names at spawn time — cached, not allocated per frame.
+    /// </summary>
+    public string DisplayName = "";
 
     public Enemy()
     {
@@ -19,12 +26,15 @@ public class Enemy : Entity
     }
 
     public void Spawn(Vector2 position, Vector2 velocity, int hp = 1, int shield = 0,
-                      string aiProfileId = "straight")
+                      string aiProfileId = "straight", EnemyRarity rarity = EnemyRarity.Normal,
+                      string displayName = "")
     {
         Position = position;
         Velocity = velocity;
         Health = EnemyHealth.Create(hp, shield);
         AiProfileId = aiProfileId;
+        Rarity = rarity;
+        DisplayName = displayName;
         AiState = new EnemyAiState
         {
             AliveTimer = 0f,
@@ -53,7 +63,24 @@ public class Enemy : Entity
     public override void Draw()
     {
         if (!Active) return;
-        Raylib.DrawRectangleV(Position, new Vector2(Width, Height), Color.Red);
+
+        // Use rarity color as the enemy tint (replaces hard-coded Color.Red)
+        Color tint = RarityConstants.GetColor(Rarity);
+        Raylib.DrawRectangleV(Position, new Vector2(Width, Height), tint);
+
+        // Rarity name label above Magic/Rare/Unique enemies
+        if (Rarity != EnemyRarity.Normal && DisplayName.Length > 0)
+        {
+            int textWidth = Raylib.MeasureText(DisplayName, 16);
+            float labelX = Position.X + Width / 2f - textWidth / 2f;
+            float labelY = Position.Y - 22f;
+
+            // Health bar pushes the name label higher
+            if (Health.MaxHp > 1)
+                labelY -= 10f;
+
+            Raylib.DrawText(DisplayName, (int)labelX, (int)labelY, 16, tint);
+        }
 
         // Health bar for enemies with more than 1 max HP
         if (Health.MaxHp > 1)

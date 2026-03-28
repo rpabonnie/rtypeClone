@@ -1,0 +1,19 @@
+{
+  "id": "shot_charged",
+  "displayName": "Charged Shot",
+  "category": "Skill",
+  "skillCategory": "Shot",
+  "baseProjectileParameters": {
+    "speed": 600.0,
+    "width": 32.0,
+    "height": 16.0,
+    "damage": 3,
+    "pierce": 0,
+    "homing": false,
+    "homingStrength": 0.0,
+    "radiusMultiplier": 1.0,
+    "count": 1,
+    "spreadAngleDeg": 0.0
+  },
+  "tags": ["physical", "projectile", "charged"]
+}

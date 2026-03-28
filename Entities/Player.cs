@@ -1,6 +1,7 @@
 using System.Numerics;
 using Raylib_cs;
 using rtypeClone.Core;
+using rtypeClone.Systems.GemSystem;
 
 namespace rtypeClone.Entities;
 
@@ -31,7 +32,10 @@ public class Player : Entity
             _iFrameTimer = Constants.IFrameDuration;
     }
 
-    public void Update(float dt, InputManager input, ObjectPool<Projectile> bulletPool)
+    /// <summary>
+    /// Main update with gem system. Tap fires slot 0 (normal), charge-release fires slot 1 (charged).
+    /// </summary>
+    public void Update(float dt, InputManager input, ObjectPool<Projectile> bulletPool, GemSystem gemSystem)
     {
         // Invincibility timer
         if (_iFrameTimer > 0f)
@@ -42,10 +46,10 @@ public class Player : Entity
         Position.X = Math.Clamp(Position.X, 0f, Constants.ScreenWidth - Width);
         Position.Y = Math.Clamp(Position.Y, 0f, Constants.ScreenHeight - Height);
 
-        // Shooting: tap fires immediately, hold charges for big shot on release
+        // Shooting: tap fires slot 0 immediately, hold charges for slot 1 on release
         if (input.ShootPressed)
         {
-            FireBullet(bulletPool, 0);
+            FireGemBullet(bulletPool, gemSystem, slot: 0);
             _isCharging = true;
             _chargeTimer = 0f;
         }
@@ -57,32 +61,36 @@ public class Player : Entity
 
         if (_isCharging && input.ShootReleased)
         {
-            if (_chargeTimer >= Constants.ChargeTimeLevel1)
+            if (_chargeTimer >= Constants.ChargeTimeLevel1 && gemSystem.HasSkillGem(1))
             {
-                FireBullet(bulletPool, 1);
+                FireGemBullet(bulletPool, gemSystem, slot: 1);
             }
             _isCharging = false;
             _chargeTimer = 0f;
         }
     }
 
-    private void FireBullet(ObjectPool<Projectile> pool, int chargeLevel)
+    /// <summary>
+    /// Fire a projectile using gem-resolved parameters from the given skill slot.
+    /// </summary>
+    private void FireGemBullet(ObjectPool<Projectile> pool, GemSystem gemSystem, int slot)
     {
-        float speed = chargeLevel >= 1 ? Constants.ChargedBulletSpeed : Constants.BulletSpeed;
+        if (!gemSystem.HasSkillGem(slot)) return;
+
+        ref readonly var param = ref gemSystem.GetActive(slot);
         var bullet = pool.Get();
         if (bullet != null)
         {
             bullet.Spawn(
-                new Vector2(Position.X + Width, Position.Y + Height / 2f - 2f),
-                new Vector2(speed, 0f),
-                chargeLevel
+                new Vector2(Position.X + Width, Position.Y + Height / 2f - param.Height / 2f),
+                in param
             );
         }
     }
 
     public override void Update(float dt)
     {
-        // Use the overload with InputManager instead
+        // Use the overload with InputManager + GemSystem instead
     }
 
     public override void Draw()

@@ -1,6 +1,7 @@
 using System.Numerics;
 using Raylib_cs;
 using rtypeClone.Core;
+using rtypeClone.Systems.GemSystem;
 
 namespace rtypeClone.Entities;
 
@@ -10,6 +11,35 @@ public class Projectile : Entity
     public int ChargeLevel;
     private Rectangle _srcRect;
 
+    /// <summary>
+    /// Spawn using gem-resolved ProjectileParameters. Data-driven path.
+    /// </summary>
+    public void Spawn(Vector2 position, in ProjectileParameters param)
+    {
+        Position = position;
+        Velocity = new Vector2(param.Speed, 0f);
+        Width = param.Width;
+        Height = param.Height;
+        Damage = param.Damage;
+        Active = true;
+
+        // Determine visual based on size (charged shots are larger)
+        if (param.Width >= 20f)
+        {
+            ChargeLevel = 1;
+            _srcRect = AssetManager.ChargedBulletSrc;
+        }
+        else
+        {
+            ChargeLevel = 0;
+            _srcRect = AssetManager.NormalBulletSrc;
+        }
+    }
+
+    /// <summary>
+    /// Legacy spawn path — still used internally for backward compatibility.
+    /// Will be removed once all callers use ProjectileParameters.
+    /// </summary>
     public void Spawn(Vector2 position, Vector2 velocity, int chargeLevel = 0)
     {
         Position = position;

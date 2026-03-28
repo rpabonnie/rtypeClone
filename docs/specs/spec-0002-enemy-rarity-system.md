@@ -3,10 +3,10 @@
 | Field    | Value                            |
 |----------|----------------------------------|
 | ID       | spec-0002                        |
-| Status   | Draft                            |
+| Status   | In Progress                      |
 | Author   | rpabo                            |
 | Created  | 2026-03-25                       |
-| Updated  | 2026-03-25                       |
+| Updated  | 2026-03-27                       |
 
 ## Overview
 
@@ -327,8 +327,8 @@ Assets/
 
 ---
 
-## Open Questions
+## Resolved Questions
 
-1. Should rarity weights be per-wave (escalating over time) or global constants?
-2. Do Magic enemies show a name prefix/suffix (e.g., "Swiftness Raider") or just a color change?
-3. How does the `splitsOnDeath` affix interact with pooling — do spawned children inherit any affixes?
+1. **Rarity weights escalate per wave.** `RarityRoller` shifts weights from Normal toward higher tiers each wave. By wave 20, roughly: Normal=30, Magic=42, Rare=22, Unique=6. (Decided 2026-03-27)
+2. **Magic/Rare/Unique enemies show both color tint AND name text** above them, built from affix display names (e.g., "Swiftness Armored"). (Decided 2026-03-27)
+3. **Split children inherit parent rarity minus one tier.** Rare → Magic children, Magic → Normal. `RarityConstants.DemoteOneTier()` implements this. Children do not inherit parent affixes. (Decided 2026-03-27)

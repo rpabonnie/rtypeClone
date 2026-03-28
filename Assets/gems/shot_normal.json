@@ -1,0 +1,19 @@
+{
+  "id": "shot_normal",
+  "displayName": "Normal Shot",
+  "category": "Skill",
+  "skillCategory": "Shot",
+  "baseProjectileParameters": {
+    "speed": 800.0,
+    "width": 12.0,
+    "height": 4.0,
+    "damage": 1,
+    "pierce": 0,
+    "homing": false,
+    "homingStrength": 0.0,
+    "radiusMultiplier": 1.0,
+    "count": 1,
+    "spreadAngleDeg": 0.0
+  },
+  "tags": ["physical", "projectile"]
+}
