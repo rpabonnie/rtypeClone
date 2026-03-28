@@ -171,9 +171,16 @@ Claude keeps docs current as part of every code change:
 ## Git Workflow
 
 - **Branch per feature.** Never commit directly to `main`. Use descriptive branch names (`feature/boss-enemy`, `fix/player-wall-clip`).
+- **Always push branches to GitHub.** Every feature branch must be pushed to the remote. Local-only branches are not acceptable.
+- **PR before merge — no exceptions.** All code reaches `main` through a pull request. Claude creates PRs with a summary of what changed and why. Ray reviews and approves before merge. Direct commits or merges to `main` are forbidden.
 - **Commit messages lead with a verb:** Add, Fix, Update, Remove, Refactor.
-- **PRs for review.** Claude creates PRs with a summary of what changed and why. Ray reviews before merge.
 - **Build must pass before merge.** `dotnet build` with zero warnings is the minimum bar.
+
+### Art & Visual Placeholders
+
+- **Art is the last phase.** All gameplay, systems, and UI must be built and playable using geometric placeholder graphics first.
+- **Geometric figures are acceptable** for representing enemies, the player ship, projectiles, power-ups, and all other visual elements until Ray decides to replace them with final art.
+- Do not block development waiting for art assets. If a feature needs a visual, use colored rectangles, circles, or simple shapes with distinct colors per entity type.
 
 ## What NOT to Do
 

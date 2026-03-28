@@ -1,0 +1,6 @@
+{
+  "id": "sine_wave",
+  "nodes": [
+    { "type": "sine", "amplitude": 120.0, "frequency": 2.5 }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "id": "zigzag",
+  "nodes": [
+    { "type": "zigzag", "verticalSpeed": 150.0, "flipInterval": 0.8 }
+  ]
+}
