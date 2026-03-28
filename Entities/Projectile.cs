@@ -8,11 +8,13 @@ namespace rtypeClone.Entities;
 public class Projectile : Entity
 {
     public int Damage;
+    public int Pierce;
+    public int HitsRemaining;
     public int ChargeLevel;
     private Rectangle _srcRect;
 
     /// <summary>
-    /// Spawn using gem-resolved ProjectileParameters. Data-driven path.
+    /// Spawn using resolved ProjectileParameters. Data-driven path.
     /// </summary>
     public void Spawn(Vector2 position, in ProjectileParameters param)
     {
@@ -21,6 +23,8 @@ public class Projectile : Entity
         Width = param.Width;
         Height = param.Height;
         Damage = param.Damage;
+        Pierce = param.Pierce;
+        HitsRemaining = param.Pierce + 1; // pierce=0 means 1 hit then despawn, pierce=2 means 3 hits
         Active = true;
 
         // Determine visual based on size (charged shots are larger)
