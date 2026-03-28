@@ -7,6 +7,7 @@ public static class Program
 {
     public static void Main()
     {
+        Raylib.SetConfigFlags(ConfigFlags.BorderlessWindowMode);
         Raylib.InitWindow(Constants.ScreenWidth, Constants.ScreenHeight, "R-Type Clone");
         Raylib.SetTargetFPS(60);
 

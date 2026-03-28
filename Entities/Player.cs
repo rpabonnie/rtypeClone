@@ -21,11 +21,14 @@ public class Player : Entity
         Active = true;
     }
 
+    public bool IsDead => Health <= 0;
+
     public void TakeHit()
     {
-        if (IsInvincible) return;
+        if (IsInvincible || IsDead) return;
         Health--;
-        _iFrameTimer = Constants.IFrameDuration;
+        if (Health > 0)
+            _iFrameTimer = Constants.IFrameDuration;
     }
 
     public void Update(float dt, InputManager input, ObjectPool<Projectile> bulletPool)
