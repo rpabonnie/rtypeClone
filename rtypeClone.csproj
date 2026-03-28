@@ -11,6 +11,12 @@
     <PackageReference Include="Raylib-cs" Version="7.0.2" />
   </ItemGroup>
 
+  <!-- Exclude the test project folder from the main project's compilation -->
+  <ItemGroup>
+    <Compile Remove="rtypeClone.Tests\**" />
+    <None Remove="rtypeClone.Tests\**" />
+  </ItemGroup>
+
   <ItemGroup>
     <None Update="Assets\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
