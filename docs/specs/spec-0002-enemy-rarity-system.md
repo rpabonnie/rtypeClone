@@ -3,10 +3,16 @@
 | Field    | Value                            |
 |----------|----------------------------------|
 | ID       | spec-0002                        |
-| Status   | In Progress                      |
+| Status   | Implemented                      |
 | Author   | rpabo                            |
 | Created  | 2026-03-25                       |
-| Updated  | 2026-03-27                       |
+| Updated  | 2026-03-30                       |
+
+## Implementation Note
+
+Core system fully implemented: `EnemyRarity` enum, `RarityConstants`, `AffixDefinition`/`AffixModifiers`, `AffixRegistry`, `RarityRoller` (with wave escalation and incompatibility checks), score multipliers in `CollisionSystem`, and 5 defensive affixes (`fast`, `shielded`, `splitter`, `armored`, `regenerating`). Unique preset `the_guardian.json` is live.
+
+**Remaining content (not blocking):** Offensive affixes (`aggressive`, `deadeye`, `piercing_shots`, `multishot`, `homing_shots`, `vengeful`) are designed in spec-0008 and will be added in Milestone M3.
 
 ## Overview
 

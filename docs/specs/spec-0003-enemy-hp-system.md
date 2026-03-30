@@ -3,10 +3,14 @@
 | Field    | Value                            |
 |----------|----------------------------------|
 | ID       | spec-0003                        |
-| Status   | In Progress (Phase 0 complete)   |
+| Status   | Implemented                      |
 | Author   | rpabo                            |
 | Created  | 2026-03-25                       |
-| Updated  | 2026-03-25                       |
+| Updated  | 2026-03-30                       |
+
+## Implementation Note
+
+Fully implemented: `EnemyHealth` struct (base HP + shield), `DamageType` enum, `DamageEvent` value type, `Enemy.TakeDamage()`, pooled `DamageNumber` entities with color-by-type and fade-out, health and shield bars rendered for all enemies with `MaxHp > 1`. All wired through `CollisionSystem`. Shield regeneration and elemental resistance/weakness remain deferred to a future spec.
 
 ## Overview
 
