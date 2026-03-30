@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] — Drop Table System (spec-0005)
+
+### Added
+- **Drop table system** (`Systems/DropSystem/`) — weighted-random gem drops tied to enemy rarity. Normal enemies have 10% drop chance, Magic 40%, Rare and Unique 100%. Drop tables loaded from `Assets/drop_tables/*.json` at startup.
+- **DroppedGem entity** (`Entities/DroppedGem.cs`) — pooled entity that drifts left with a sine-wave bob after spawning at an enemy's death position. Despawns after 8s or when off-screen. Rendered as a diamond placeholder.
+- **GemInventory** (`Core/GemInventory.cs`) — simple list-backed inventory of collected module IDs. Player collects gems by overlapping them during gameplay.
+- **Player gem collection** — `CollisionSystem` checks player-vs-gem overlap and adds collected gem IDs to the inventory.
+- **4 drop table JSON files** — `drops_normal`, `drops_magic`, `drops_rare`, `drops_unique_default` in `Assets/drop_tables/`.
+
+---
+
 ## [Unreleased] — Enemy Combat Foundation (Phase 0)
 
 ### Added

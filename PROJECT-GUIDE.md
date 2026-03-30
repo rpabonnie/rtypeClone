@@ -77,6 +77,14 @@ Each shot-type weapon module defines both a **tap fire** (base parameters) and a
 
 **Key types:** `ProjectileParameters`, `ModuleDefinition`, `ModuleRegistry`, `ModulePipeline`, `PlayerLoadout`, `ModuleSystem`.
 
+### Drop Table System
+
+Enemies drop module gems on death. Drop tables are loaded from `Assets/drop_tables/*.json` at startup. Each table specifies a drop chance and weighted entries mapping to module IDs. Enemy rarity determines which table is used: Normal (10% chance), Magic (40%), Rare (100%), Unique (100%).
+
+`DropSystem.Roll()` is called in `CollisionSystem` when an enemy dies. If the roll succeeds, a `DroppedGem` is spawned from the pool at the enemy's death position. Gems drift left with a sine-wave bob and despawn after 8 seconds. Players collect gems by overlapping them; collected gem IDs are stored in `GemInventory`.
+
+**Key types:** `DropTable`, `DropTableEntry`, `DropTableRegistry`, `DropSystem`, `DroppedGem`, `GemInventory`.
+
 ### UI Scenes
 
 The game supports three scenes: `Playing`, `PauseMenu`, and `Inventory`.
@@ -108,6 +116,7 @@ Core/
   InputManager.cs                   Controller + keyboard abstraction
   ObjectPool.cs                     Generic object pool
   AssetManager.cs                   Texture loading + atlas system
+  GemInventory.cs                   Collected module gem storage
 Entities/
   Entity.cs                         Base class
   Player.cs                         Player ship
@@ -117,6 +126,7 @@ Entities/
   EnemyHealth.cs                    HP + shield struct
   EnemyRarity.cs                    Rarity enum + constants
   DamageNumber.cs                   Floating damage text (pooled)
+  DroppedGem.cs                     Module gem drop (pooled)
 Systems/
   CollisionSystem.cs                Collision detection + rarity score
   ScrollingBackground.cs            Parallax background
@@ -141,6 +151,10 @@ Systems/
       SineHandler.cs                Sine wave oscillation
       ZigzagHandler.cs              Vertical bounce pattern
       AttackHandler.cs              Enemy shooting (telegraph → fire → cooldown)
+  DropSystem/
+    DropTable.cs                    Drop table data model
+    DropTableRegistry.cs            JSON drop table loader
+    DropSystem.cs                   Rarity-based drop rolling
   RaritySystem/
     AffixDefinition.cs              Affix data model
     AffixModifiers.cs               Combinable modifier struct
@@ -162,6 +176,7 @@ Assets/
   attacks/                          Enemy attack config JSON files
   affixes/                          Enemy affix JSON files
   modules/                          Ship module JSON files
+  drop_tables/                      Drop table JSON files
   uniques/                          Unique enemy preset JSON files
   M484BulletCollection1.png         Bullet sprite sheet
 ```

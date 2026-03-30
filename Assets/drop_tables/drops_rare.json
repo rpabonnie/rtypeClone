@@ -1,0 +1,11 @@
+{
+  "id": "drops_rare",
+  "guaranteedDrop": true,
+  "dropChance": 1.0,
+  "entries": [
+    { "gemId": "support_pierce",    "weight": 25 },
+    { "gemId": "support_homing",    "weight": 25 },
+    { "gemId": "support_multishot", "weight": 25 },
+    { "gemId": "support_damage",    "weight": 25 }
+  ]
+}

@@ -41,4 +41,7 @@ public static class Constants
 
     // Damage numbers
     public const int DamageNumberPoolSize = 64;
+
+    // Dropped gems
+    public const int DroppedGemPoolSize = 32;
 }

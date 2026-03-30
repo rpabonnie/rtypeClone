@@ -1,0 +1,8 @@
+{
+  "id": "drops_normal",
+  "guaranteedDrop": false,
+  "dropChance": 0.1,
+  "entries": [
+    { "gemId": "shot_normal", "weight": 100 }
+  ]
+}

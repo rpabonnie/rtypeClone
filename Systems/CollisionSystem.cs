@@ -3,6 +3,7 @@ using Raylib_cs;
 using rtypeClone.Core;
 using rtypeClone.Entities;
 using rtypeClone.Systems.CombatSystem;
+using rtypeClone.Systems.DropSystem;
 
 namespace rtypeClone.Systems;
 
@@ -32,7 +33,9 @@ public class CollisionSystem
     }
 
     public void CheckCollisions(Player player, ObjectPool<Projectile> bullets,
-                                ObjectPool<Enemy> enemies, ObjectPool<DamageNumber> damageNumbers)
+                                ObjectPool<Enemy> enemies, ObjectPool<DamageNumber> damageNumbers,
+                                DropSystem.DropSystem dropSystem, ObjectPool<DroppedGem> droppedGemPool,
+                                GemInventory gemInventory)
     {
         // Bullets vs Enemies
         bullets.ForEachActive((bullet, bi) =>
@@ -61,6 +64,8 @@ public class CollisionSystem
 
                     if (!enemy.Health.IsAlive)
                     {
+                        // Roll drop before returning to pool (need position + rarity)
+                        dropSystem.Roll(enemy.Rarity, droppedGemPool, enemy.Position);
                         enemies.Return(ei);
                         int score = (int)(BaseKillScore * RarityConstants.ScoreMultiplier(enemy.Rarity));
                         player.Score += score;
@@ -88,5 +93,16 @@ public class CollisionSystem
                 }
             });
         }
+
+        // Player vs DroppedGems — collect on overlap
+        droppedGemPool.ForEachActive((gem, gi) =>
+        {
+            if (Raylib.CheckCollisionRecs(player.Bounds, gem.Bounds))
+            {
+                gemInventory.Add(gem.GemId);
+                gem.Active = false;
+                droppedGemPool.Return(gi);
+            }
+        });
     }
 }
