@@ -5,6 +5,7 @@ using rtypeClone.Systems;
 using rtypeClone.Systems.AiSystem;
 using rtypeClone.Systems.ModuleSystem;
 using rtypeClone.Systems.RaritySystem;
+using rtypeClone.Systems.DropSystem;
 using rtypeClone.Systems.UI;
 
 namespace rtypeClone.Core;
@@ -28,6 +29,10 @@ public class GameState
     private readonly AiSystem _aiSystem;
     private readonly AffixRegistry _affixRegistry;
     private readonly ModuleSystem _moduleSystem;
+    private readonly ObjectPool<DroppedGem> _droppedGemPool;
+    private readonly DropTableRegistry _dropTableRegistry;
+    private readonly DropSystem _dropSystem;
+    private readonly GemInventory _gemInventory;
     private readonly PauseMenu _pauseMenu;
     private readonly LoadoutScreen _loadoutScreen;
 
@@ -50,6 +55,10 @@ public class GameState
         _aiSystem = new AiSystem("Assets/ai_profiles");
         _affixRegistry = new AffixRegistry("Assets/affixes");
         _moduleSystem = new ModuleSystem("Assets/modules");
+        _droppedGemPool = new ObjectPool<DroppedGem>(Constants.DroppedGemPoolSize);
+        _dropTableRegistry = new DropTableRegistry("Assets/drop_tables");
+        _dropSystem = new DropSystem(_dropTableRegistry);
+        _gemInventory = new GemInventory();
         _pauseMenu = new PauseMenu();
         _loadoutScreen = new LoadoutScreen();
     }
@@ -126,7 +135,15 @@ public class GameState
                 _damageNumberPool.Return(i);
         });
 
-        _collisionSystem.CheckCollisions(_player, _bulletPool, _enemyPool, _damageNumberPool);
+        _droppedGemPool.ForEachActive((gem, i) =>
+        {
+            gem.Update(dt);
+            if (!gem.Active)
+                _droppedGemPool.Return(i);
+        });
+
+        _collisionSystem.CheckCollisions(_player, _bulletPool, _enemyPool, _damageNumberPool,
+            _dropSystem, _droppedGemPool, _gemInventory);
     }
 
     private void UpdatePauseMenu(InputManager input)
@@ -188,6 +205,7 @@ public class GameState
 
         _bulletPool.ForEachActive((bullet, _) => bullet.Draw());
         _enemyPool.ForEachActive((enemy, _) => enemy.Draw());
+        _droppedGemPool.ForEachActive((gem, _) => gem.Draw());
         _damageNumberPool.ForEachActive((dn, _) => dn.Draw());
 
         // Debug overlay

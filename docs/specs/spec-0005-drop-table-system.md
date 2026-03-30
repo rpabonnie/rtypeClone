@@ -3,7 +3,7 @@
 | Field    | Value                            |
 |----------|----------------------------------|
 | ID       | spec-0005                        |
-| Status   | Draft                            |
+| Status   | Implemented                      |
 | Author   | rpabo                            |
 | Created  | 2026-03-25                       |
 | Updated  | 2026-03-25                       |

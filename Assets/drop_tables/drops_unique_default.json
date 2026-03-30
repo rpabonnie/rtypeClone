@@ -1,0 +1,9 @@
+{
+  "id": "drops_unique_default",
+  "guaranteedDrop": true,
+  "dropChance": 1.0,
+  "entries": [
+    { "gemId": "support_homing",    "weight": 50 },
+    { "gemId": "support_multishot", "weight": 50 }
+  ]
+}

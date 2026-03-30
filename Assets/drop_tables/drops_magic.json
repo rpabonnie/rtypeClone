@@ -1,0 +1,10 @@
+{
+  "id": "drops_magic",
+  "guaranteedDrop": false,
+  "dropChance": 0.4,
+  "entries": [
+    { "gemId": "shot_normal",    "weight": 50 },
+    { "gemId": "support_damage", "weight": 30 },
+    { "gemId": "support_speed",  "weight": 20 }
+  ]
+}
