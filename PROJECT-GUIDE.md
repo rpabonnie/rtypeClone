@@ -30,6 +30,7 @@ All game objects inherit from `Entity` (position, velocity, bounds, active flag)
 | Player      | `Entities/Player.cs`      | Movement, module-driven shooting, i-frames      |
 | Enemy       | `Entities/Enemy.cs`       | AI-driven, rarity tiers, affix modifiers        |
 | Projectile  | `Entities/Projectile.cs`  | Module-parameterized bullets (pooled)           |
+| EnemyProjectile | `Entities/EnemyProjectile.cs` | Enemy bullets — red/orange, pooled          |
 | DamageNumber| `Entities/DamageNumber.cs`| Floating damage text (pooled)                   |
 
 ### Object Pooling
@@ -42,12 +43,13 @@ All frequently created/destroyed entities use `ObjectPool<T>` (`Core/ObjectPool.
 - `DamageType` enum: `NonElemental`, `Energy`, `Fire`, `Cold`.
 - `EnemyHealth` struct: base HP + shield layer with damage application logic.
 - `CollisionSystem` builds `DamageEvent` from projectile stats and applies it.
+- **Enemy projectiles** — enemies can now shoot back. `EnemyProjectile` is a pooled entity (red/orange, larger than player bullets). Attack configs are loaded from `Assets/attacks/*.json` and referenced by AI profile nodes via `attackId`. The `AttackHandler` drives the telegraph → fire → cooldown cycle. Supports burst fire, fan spread, homing, and both `at_player` and `fixed_left` aim modes.
 
 ### AI Profile System
 
 Enemy movement is driven by JSON profiles in `Assets/ai_profiles/`. Each profile lists behaviour nodes executed per frame.
 
-**Current handlers:** `straight`, `sine`, `zigzag`
+**Current handlers:** `straight`, `sine`, `zigzag`, `attack`
 
 **Key types:**
 - `AiProfile` / `AiNodeConfig` — deserialized from JSON at startup
@@ -120,6 +122,7 @@ Entities/
   Player.cs                         Player ship
   Enemy.cs                          Enemy (AI-driven)
   Projectile.cs                     Bullets (pooled)
+  EnemyProjectile.cs                Enemy bullets (pooled)
   EnemyHealth.cs                    HP + shield struct
   EnemyRarity.cs                    Rarity enum + constants
   DamageNumber.cs                   Floating damage text (pooled)
@@ -132,6 +135,8 @@ Systems/
   CombatSystem/
     DamageType.cs                   Damage type enum
     DamageEvent.cs                  Damage event struct
+    EnemyAttackConfig.cs            Enemy attack data model (from JSON)
+    EnemyAttackRegistry.cs          JSON attack config loader
   AiSystem/
     AiSystem.cs                     AI update loop
     AiProfile.cs                    Profile data model
@@ -145,6 +150,7 @@ Systems/
       StraightHandler.cs            Linear movement
       SineHandler.cs                Sine wave oscillation
       ZigzagHandler.cs              Vertical bounce pattern
+      AttackHandler.cs              Enemy shooting (telegraph → fire → cooldown)
   DropSystem/
     DropTable.cs                    Drop table data model
     DropTableRegistry.cs            JSON drop table loader
@@ -167,6 +173,7 @@ Systems/
     LoadoutScreen.cs                Module Bay (2×2 grid + debug picker)
 Assets/
   ai_profiles/                      AI profile JSON files
+  attacks/                          Enemy attack config JSON files
   affixes/                          Enemy affix JSON files
   modules/                          Ship module JSON files
   drop_tables/                      Drop table JSON files

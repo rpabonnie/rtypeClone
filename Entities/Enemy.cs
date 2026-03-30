@@ -64,8 +64,10 @@ public class Enemy : Entity
     {
         if (!Active) return;
 
-        // Use rarity color as the enemy tint (replaces hard-coded Color.Red)
-        Color tint = RarityConstants.GetColor(Rarity);
+        // Use rarity color as the enemy tint — flash white during telegraph
+        Color tint = AiState.IsTelegraphing
+            ? Color.White
+            : RarityConstants.GetColor(Rarity);
         Raylib.DrawRectangleV(Position, new Vector2(Width, Height), tint);
 
         // Rarity name label above Magic/Rare/Unique enemies

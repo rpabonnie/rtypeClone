@@ -50,4 +50,8 @@ public class AiNodeConfig
     public float ShieldRadius { get; init; }
     [JsonPropertyName("shieldedRarity")]
     public string ShieldedRarity { get; init; } = "";
+
+    // Attack (references an EnemyAttackConfig by id)
+    [JsonPropertyName("attackId")]
+    public string AttackId { get; init; } = "";
 }
