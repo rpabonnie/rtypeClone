@@ -3,10 +3,16 @@
 | Field    | Value                            |
 |----------|----------------------------------|
 | ID       | spec-0001                        |
-| Status   | In Progress                      |
+| Status   | Implemented                      |
 | Author   | rpabo                            |
 | Created  | 2026-03-25                       |
-| Updated  | 2026-03-27                       |
+| Updated  | 2026-03-30                       |
+
+## Implementation Note
+
+**Rename:** This system shipped as the **Module System** (`Systems/ModuleSystem/`). "Gem" was renamed to "Module" throughout the codebase for clarity. `GemDefinition` → `ModuleDefinition`, `GemRegistry` → `ModuleRegistry`, `GemModifierPipeline` → `ModulePipeline`, `GemSystem` → `ModuleSystem`. JSON assets live in `Assets/modules/`. All spec references to "gems" map to "modules" in code.
+
+**Remaining content (not blocking):** `shot_spread`, `shot_rapid`, and `shield_forward` weapon modules are designed in the catalogue below but not yet added as JSON assets. These are deferred to Milestone M6 (module variety pass).
 
 ## Overview
 

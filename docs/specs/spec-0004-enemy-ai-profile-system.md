@@ -3,10 +3,16 @@
 | Field    | Value                            |
 |----------|----------------------------------|
 | ID       | spec-0004                        |
-| Status   | In Progress (Phase 0 complete)   |
+| Status   | Implemented                      |
 | Author   | rpabo                            |
 | Created  | 2026-03-25                       |
-| Updated  | 2026-03-25                       |
+| Updated  | 2026-03-30                       |
+
+## Implementation Note
+
+Core system fully implemented: `IBehaviourHandler`, `BehaviourRegistry`, `AiSystem`, `AiProfileRegistry`, `AiContext`, `EnemyAiState` (zero-allocation), and JSON profile loading. Four handlers ship: `StraightHandler`, `SineHandler`, `ZigzagHandler`, `AttackHandler`. Profiles: `straight.json`, `sine_wave.json`, `zigzag.json`, `fodder_shooter.json`.
+
+**Remaining handlers** (`charge`, `retreat`, `formation`, `shield_ally`, `dive`, `warp`, `strafe`, `dodge`, `maintain_distance`, `retreat_on_low_hp`, `boss_phase`, `command_aura`) are being added incrementally through spec-0008 milestones M2–M5. Each handler gets its own PR; this spec tracks the framework, not handler inventory.
 
 ## Overview
 

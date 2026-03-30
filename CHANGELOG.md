@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] — M1: Spec Status Sync
+
+### Changed
+- **spec-0001** (Gem/Module Skill System) — status updated to `Implemented`. Added implementation note documenting the gem→module rename and noting deferred weapon modules (`shot_spread`, `shot_rapid`, `shield_forward`) for Milestone M6.
+- **spec-0002** (Enemy Rarity System) — status updated to `Implemented`. Added implementation note documenting shipped content (4 tiers, 5 defensive affixes, wave escalation, score multipliers). Offensive affixes deferred to spec-0008 M3.
+- **spec-0003** (Enemy HP System) — status updated to `Implemented`. Added implementation note confirming all goals shipped (EnemyHealth struct, DamageEvent, DamageNumbers pool, health/shield bars).
+- **spec-0004** (Enemy AI Profile System) — status updated to `Implemented` for the core framework. Added implementation note clarifying that additional handlers are delivered incrementally through spec-0008 milestones rather than in this spec.
+- **spec-0006** (Ship Loadout Socket System) — status updated from `Draft` to `In Progress`. Added note describing what's implemented (Module Bay, scene management, debug picker, persistence) vs. what remains (inventory panel integration, gem swapping from collected inventory).
+- **spec-0008** (Enemy Combat System) — status updated from `Draft` to `In Progress (Phase 0 complete)`. Phase 0 checkboxes ticked. Spec restored from orphaned commit in prior session.
+
+### Added
+- **spec-0008-enemy-combat-system.md** — added to `docs/specs/` (was authored in a prior session but never merged to main; recovered from git history).
+
+---
+
 ## [Unreleased] — Drop Table System (spec-0005)
 
 ### Added

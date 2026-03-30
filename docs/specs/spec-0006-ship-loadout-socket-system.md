@@ -3,10 +3,16 @@
 | Field    | Value                            |
 |----------|----------------------------------|
 | ID       | spec-0006                        |
-| Status   | Draft                            |
+| Status   | In Progress                      |
 | Author   | rpabo                            |
 | Created  | 2026-03-25                       |
-| Updated  | 2026-03-25                       |
+| Updated  | 2026-03-30                       |
+
+## Implementation Note
+
+**Implemented:** `LoadoutScreen` (Module Bay) with a 2×2 weapon slot grid, module name, tap/charged stats display, support slot status, d-pad/arrow navigation, scene management (`GameScene` enum), and a debug module picker (F3 + confirm to equip any module for testing). `LoadoutPersistence` save/load is wired. Scene freezes game world while open.
+
+**Remaining:** Scrollable inventory panel showing collected modules from `GemInventory`, socket-level gem swapping from inventory (current UI shows equipped modules but doesn't pull from inventory), incompatibility feedback, and the "preview fire" animation. These complete the spec and are the next task for this screen.
 
 ## Overview
 
