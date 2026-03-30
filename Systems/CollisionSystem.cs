@@ -10,6 +10,27 @@ public class CollisionSystem
 {
     private const int BaseKillScore = 100;
 
+    public void CheckEnemyProjectileVsPlayer(ObjectPool<EnemyProjectile> pool, Player player)
+    {
+        if (player.IsInvincible) return;
+
+        bool hit = false;
+        pool.ForEachActive((proj, i) =>
+        {
+            if (hit) return; // Only one hit per frame
+            if (!proj.Active) return;
+
+            if (Raylib.CheckCollisionRecs(proj.Bounds, player.Bounds))
+            {
+                player.TakeHit();
+                proj.HitsRemaining--;
+                if (proj.HitsRemaining <= 0)
+                    pool.Return(i);
+                hit = true;
+            }
+        });
+    }
+
     public void CheckCollisions(Player player, ObjectPool<Projectile> bullets,
                                 ObjectPool<Enemy> enemies, ObjectPool<DamageNumber> damageNumbers)
     {

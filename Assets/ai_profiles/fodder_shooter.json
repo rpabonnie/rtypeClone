@@ -1,0 +1,14 @@
+{
+  "id": "fodder_shooter",
+  "nodes": [
+    {
+      "type": "sine",
+      "amplitude": 80.0,
+      "frequency": 2.0
+    },
+    {
+      "type": "attack",
+      "attackId": "aimed_shot"
+    }
+  ]
+}
