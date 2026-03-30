@@ -1,0 +1,21 @@
+{
+  "id": "aimed_shot",
+  "category": "projectile",
+  "cooldown": 2.5,
+  "telegraphTime": 0.4,
+  "burstCount": 1,
+  "burstInterval": 0.0,
+  "projectileSpeed": 350,
+  "damage": 1,
+  "lifetime": 5.0,
+  "count": 1,
+  "spreadAngleDeg": 0,
+  "homing": false,
+  "homingStrength": 0,
+  "pierce": 0,
+  "stationary": false,
+  "aimMode": "at_player",
+  "aimOffsetDeg": 0,
+  "projectileWidth": 8,
+  "projectileHeight": 8
+}

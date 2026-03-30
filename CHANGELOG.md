@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] — Enemy Combat Foundation (Phase 0)
+
+### Added
+- **Enemy projectiles** (`Entities/EnemyProjectile.cs`) — pooled projectile entity for enemy attacks. Red/orange visuals distinct from player's blue/cyan bullets. Supports homing, pierce, lifetime, and stationary modes.
+- **EnemyAttackConfig** (`Systems/CombatSystem/EnemyAttackConfig.cs`) — data class for enemy attack definitions loaded from JSON. Fields: cooldown, telegraph time, burst count, spread, aim mode, projectile stats.
+- **EnemyAttackRegistry** (`Systems/CombatSystem/EnemyAttackRegistry.cs`) — loads all attack definitions from `Assets/attacks/*.json` at startup.
+- **AttackHandler** (`Systems/AiSystem/Handlers/AttackHandler.cs`) — AI behaviour handler that makes enemies shoot. Supports telegraph → fire → cooldown cycle, burst fire, fan spread, aimed and fixed-left aim modes.
+- **Enemy telegraph visual** — enemies flash white during telegraph phase to warn the player before firing.
+- **`aimed_shot.json`** — first enemy attack config (2.5s cooldown, 0.4s telegraph, aimed at player, speed 350).
+- **`fodder_shooter` AI profile** — sine wave movement + aimed shot attack. Added to WaveSpawner's profile pool so some enemies spawn as shooters.
+- **Enemy projectile vs player collision** — `CollisionSystem.CheckEnemyProjectileVsPlayer()` detects hits, triggers `player.TakeHit()`, respects invincibility frames. One hit per frame max.
+- **`EnemyProjectilePoolSize` constant** (128) in `Constants.cs`.
+
+### Changed
+- **AiSystem** constructor now receives `ObjectPool<EnemyProjectile>` and `EnemyAttackRegistry` to pass through to `BehaviourRegistry` → `AttackHandler`.
+- **BehaviourRegistry** constructor accepts pool + registry dependencies; registers `AttackHandler` alongside existing handlers.
+- **EnemyAiState** struct — added `AttackCooldownTimer`, `TelegraphTimer`, `IsTelegraphing`, `BurstShotsRemaining`, `BurstTimer` fields.
+- **AiNodeConfig** — added `AttackId` property for linking behaviour nodes to attack configs.
+- **GameState** — initializes enemy projectile pool and attack registry; updates and draws enemy projectiles; runs enemy-projectile-vs-player collision check.
+- **WaveSpawner** — added `"fodder_shooter"` to the AI profile pool.
+
+---
+
 ## [Unreleased] — Phase 2: Module System Rename + UI
 
 ### Added

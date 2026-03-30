@@ -3,6 +3,7 @@ using Raylib_cs;
 using rtypeClone.Entities;
 using rtypeClone.Systems;
 using rtypeClone.Systems.AiSystem;
+using rtypeClone.Systems.CombatSystem;
 using rtypeClone.Systems.ModuleSystem;
 using rtypeClone.Systems.RaritySystem;
 using rtypeClone.Systems.UI;
@@ -21,12 +22,14 @@ public class GameState
     private readonly Player _player;
     private readonly ObjectPool<Projectile> _bulletPool;
     private readonly ObjectPool<Enemy> _enemyPool;
+    private readonly ObjectPool<EnemyProjectile> _enemyProjectilePool;
     private readonly ObjectPool<DamageNumber> _damageNumberPool;
     private readonly ScrollingBackground _background;
     private readonly WaveSpawner _waveSpawner;
     private readonly CollisionSystem _collisionSystem;
     private readonly AiSystem _aiSystem;
     private readonly AffixRegistry _affixRegistry;
+    private readonly EnemyAttackRegistry _attackRegistry;
     private readonly ModuleSystem _moduleSystem;
     private readonly PauseMenu _pauseMenu;
     private readonly LoadoutScreen _loadoutScreen;
@@ -43,11 +46,13 @@ public class GameState
         _player = new Player();
         _bulletPool = new ObjectPool<Projectile>(Constants.BulletPoolSize);
         _enemyPool = new ObjectPool<Enemy>(Constants.EnemyPoolSize);
+        _enemyProjectilePool = new ObjectPool<EnemyProjectile>(Constants.EnemyProjectilePoolSize);
         _damageNumberPool = new ObjectPool<DamageNumber>(Constants.DamageNumberPoolSize);
         _background = new ScrollingBackground();
         _waveSpawner = new WaveSpawner();
         _collisionSystem = new CollisionSystem();
-        _aiSystem = new AiSystem("Assets/ai_profiles");
+        _attackRegistry = new EnemyAttackRegistry("Assets/attacks");
+        _aiSystem = new AiSystem("Assets/ai_profiles", _enemyProjectilePool, _attackRegistry);
         _affixRegistry = new AffixRegistry("Assets/affixes");
         _moduleSystem = new ModuleSystem("Assets/modules");
         _pauseMenu = new PauseMenu();
@@ -119,6 +124,14 @@ public class GameState
                 _enemyPool.Return(i);
         });
 
+        _enemyProjectilePool.ForEachActive((proj, i) =>
+        {
+            proj.Update(dt);
+            proj.UpdateHoming(dt, _player.Position);
+            if (!proj.Active || proj.IsOffScreen())
+                _enemyProjectilePool.Return(i);
+        });
+
         _damageNumberPool.ForEachActive((dn, i) =>
         {
             dn.Update(dt);
@@ -127,6 +140,7 @@ public class GameState
         });
 
         _collisionSystem.CheckCollisions(_player, _bulletPool, _enemyPool, _damageNumberPool);
+        _collisionSystem.CheckEnemyProjectileVsPlayer(_enemyProjectilePool, _player);
     }
 
     private void UpdatePauseMenu(InputManager input)
@@ -188,6 +202,7 @@ public class GameState
 
         _bulletPool.ForEachActive((bullet, _) => bullet.Draw());
         _enemyPool.ForEachActive((enemy, _) => enemy.Draw());
+        _enemyProjectilePool.ForEachActive((proj, _) => proj.Draw());
         _damageNumberPool.ForEachActive((dn, _) => dn.Draw());
 
         // Debug overlay

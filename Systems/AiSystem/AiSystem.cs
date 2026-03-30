@@ -1,4 +1,7 @@
 using System.Numerics;
+using rtypeClone.Core;
+using rtypeClone.Entities;
+using rtypeClone.Systems.CombatSystem;
 
 namespace rtypeClone.Systems.AiSystem;
 
@@ -7,9 +10,10 @@ public class AiSystem
     private readonly BehaviourRegistry _registry;
     private readonly AiProfileRegistry _profiles;
 
-    public AiSystem(string profilesDirectory)
+    public AiSystem(string profilesDirectory, ObjectPool<EnemyProjectile> enemyProjectilePool,
+                    EnemyAttackRegistry attackRegistry)
     {
-        _registry = new BehaviourRegistry();
+        _registry = new BehaviourRegistry(enemyProjectilePool, attackRegistry);
         _profiles = new AiProfileRegistry(profilesDirectory);
     }
 

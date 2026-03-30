@@ -13,7 +13,7 @@ public class WaveSpawner
     private const float SpawnInterval = 1.5f;
     private const int SpawnsPerWave = 8;
 
-    private static readonly string[] ProfileIds = { "straight", "sine_wave", "zigzag" };
+    private static readonly string[] ProfileIds = { "straight", "sine_wave", "zigzag", "fodder_shooter" };
 
     private readonly RarityRoller _rarityRoller = new();
 

@@ -17,6 +17,13 @@ public struct EnemyAiState
     // Shooting (Phase 2+)
     public float FireCooldownTimer;
 
+    // Attack (enemy combat)
+    public float AttackCooldownTimer;
+    public float TelegraphTimer;
+    public bool IsTelegraphing;
+    public int BurstShotsRemaining;
+    public float BurstTimer;
+
     // Formation (Phase 3)
     public int FormationSlot;
 }
