@@ -1,0 +1,21 @@
+{
+  "id": "suicide_dive",
+  "category": "suicide_dive",
+  "cooldown": 99999,
+  "telegraphTime": 0.6,
+  "burstCount": 1,
+  "burstInterval": 0.0,
+  "projectileSpeed": 0,
+  "damage": 0,
+  "lifetime": 0,
+  "count": 1,
+  "spreadAngleDeg": 0,
+  "homing": false,
+  "homingStrength": 0,
+  "pierce": 0,
+  "stationary": false,
+  "aimMode": "at_player",
+  "aimOffsetDeg": 0,
+  "projectileWidth": 0,
+  "projectileHeight": 0
+}

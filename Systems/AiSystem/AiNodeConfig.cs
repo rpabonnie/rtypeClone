@@ -54,4 +54,12 @@ public class AiNodeConfig
     // Attack (references an EnemyAttackConfig by id)
     [JsonPropertyName("attackId")]
     public string AttackId { get; init; } = "";
+
+    // Dive entry handler
+    [JsonPropertyName("diveSpeed")]
+    public float DiveSpeed { get; init; } = 400f;
+    [JsonPropertyName("curveAfter")]
+    public float CurveAfter { get; init; } = 300f;
+    [JsonPropertyName("exitDirection")]
+    public string ExitDirection { get; init; } = "left";
 }

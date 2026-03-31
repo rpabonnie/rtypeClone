@@ -1,0 +1,8 @@
+{
+  "id": "fodder_mine",
+  "entryDirection": "right",
+  "nodes": [
+    { "type": "straight" },
+    { "type": "attack", "attackId": "mine_layer" }
+  ]
+}

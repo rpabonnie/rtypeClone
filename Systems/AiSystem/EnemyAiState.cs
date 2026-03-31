@@ -26,4 +26,11 @@ public struct EnemyAiState
 
     // Formation (Phase 3)
     public int FormationSlot;
+
+    // Suicide dive
+    public bool SuicideDiveActive;     // true once telegraph completes; enemy charges player
+
+    // Dive entry (top/bottom swoops)
+    public float DiveDistanceTraveled; // pixels traveled during the initial dive phase
+    public bool  DiveCurved;           // true once the dive has curved to horizontal exit
 }

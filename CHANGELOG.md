@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] — M2: Fodder Attack Variety (spec-0008 Phase 1)
+
+### Added
+- **`burst_fire` attack** — 3-round burst fired left, 0.3s telegraph, 3.0s cooldown. Enemy flashes white, then sends 3 sequential shots.
+- **`spray` attack** — fan of 3 bullets at 45° spread fired left, 0.5s telegraph, 3.5s cooldown.
+- **`mine_layer` attack** — drops a stationary mine at the enemy's position every 2.0s, no telegraph. Mines last 5s, deal 2 damage, and render as a yellow/gold square distinct from moving projectiles.
+- **`suicide_dive` attack** — after a 0.6s red telegraph flash, the enemy locks onto the player and charges at 600 px/s. On contact or death, spawns a ring of 6 slow projectiles outward in all directions.
+- **`reverse_entry` profile** — enemy spawns off the left edge and moves right, surprising the player from behind.
+- **`dive_top` profile** — enemy swoops in from above, dives downward 320px then curves left.
+- **`dive_bottom` profile** — enemy swoops in from below, dives upward 320px then curves left.
+- **`fodder_burst` profile** — straight movement + burst fire attack.
+- **`fodder_spray` profile** — sine movement + spray attack.
+- **`fodder_mine` profile** — straight movement + mine layer.
+- **`fodder_suicide` profile** — sine movement + suicide dive.
+- **`DiveHandler`** (`Systems/AiSystem/Handlers/DiveHandler.cs`) — new behaviour handler for top/bottom entry swoops. Reads `diveSpeed` and `curveAfter` from node config; infers dive direction (down/up) from spawn Y position relative to screen centre.
+
+### Changed
+- **`AiProfile`** — added `entryDirection` JSON field ("right" default, "left", "top", "bottom"). Used by WaveSpawner to determine spawn edge.
+- **`AiNodeConfig`** — added `diveSpeed`, `curveAfter`, `exitDirection` fields for DiveHandler.
+- **`EnemyAiState`** — added `SuicideDiveActive`, `DiveDistanceTraveled`, `DiveCurved` fields.
+- **`AttackHandler`** — handles `category: "suicide_dive"` attacks: sets `SuicideDiveActive` and redirects enemy velocity toward the player at 600 px/s instead of spawning a projectile. Mines now spawn at enemy centre rather than left edge.
+- **`BehaviourRegistry`** — registers `DiveHandler`.
+- **`AiSystem`** — added `GetEntryDirection(profileId)` helper for WaveSpawner.
+- **`WaveSpawner`** — now accepts `AiSystem` to read entry direction per profile. Spawn position and initial velocity are edge-specific. Profile pool expanded to 11 profiles with wave-scaled shooter ratio (25% → 50% → 75% across waves 1-3, 4-7, 8+).
+- **`CollisionSystem`** — `CheckCollisions` now accepts `ObjectPool<EnemyProjectile>` to support explosion ring spawning. Spawns 6-bullet ring on suicide-dive enemy death (both bullet-kill and contact-kill paths).
+- **`EnemyProjectile.Draw()`** — mines (`IsStationary`) render with a distinct yellow/gold pulsing style; moving projectiles unchanged (orange/red).
+- **`GameState`** — threads `_aiSystem` into WaveSpawner and `_enemyProjectilePool` into CheckCollisions.
+- **spec-0008** — Phase 1 checkboxes ticked, status updated to `In Progress (Phase 1 complete)`.
+
+---
+
 ## [Unreleased] — M1: Spec Status Sync
 
 ### Changed
