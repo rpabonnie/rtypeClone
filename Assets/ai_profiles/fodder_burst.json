@@ -1,0 +1,8 @@
+{
+  "id": "fodder_burst",
+  "entryDirection": "right",
+  "nodes": [
+    { "type": "straight" },
+    { "type": "attack", "attackId": "burst_fire" }
+  ]
+}

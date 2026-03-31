@@ -1,0 +1,21 @@
+{
+  "id": "burst_fire",
+  "category": "projectile",
+  "cooldown": 3.0,
+  "telegraphTime": 0.3,
+  "burstCount": 3,
+  "burstInterval": 0.15,
+  "projectileSpeed": 380,
+  "damage": 1,
+  "lifetime": 4.0,
+  "count": 1,
+  "spreadAngleDeg": 0,
+  "homing": false,
+  "homingStrength": 0,
+  "pierce": 0,
+  "stationary": false,
+  "aimMode": "fixed_left",
+  "aimOffsetDeg": 0,
+  "projectileWidth": 10,
+  "projectileHeight": 6
+}

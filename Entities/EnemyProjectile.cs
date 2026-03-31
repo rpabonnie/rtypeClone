@@ -78,15 +78,38 @@ public class EnemyProjectile : Entity
     {
         if (!Active) return;
 
-        // Red/orange color distinct from player's blue/cyan bullets
-        Raylib.DrawRectangleV(Position, new Vector2(Width, Height), Color.Orange);
-        // Inner core for visual pop
-        if (Width > 6f && Height > 6f)
+        if (IsStationary)
         {
-            Raylib.DrawRectangleV(
-                new Vector2(Position.X + 1f, Position.Y + 1f),
-                new Vector2(Width - 2f, Height - 2f),
-                Color.Red);
+            // Mines: yellow diamond outline to distinguish from moving projectiles.
+            // A pulsing fade based on remaining lifetime adds a visual warning.
+            float lifeRatio = 1f - (Age / Lifetime);
+            byte alpha = (byte)(180 + (int)(75f * lifeRatio));
+            var mineColor = new Color((byte)255, (byte)220, (byte)0, alpha);
+            var darkCore  = new Color((byte)180, (byte)100, (byte)0, alpha);
+
+            // Outer square
+            Raylib.DrawRectangleV(Position, new Vector2(Width, Height), mineColor);
+            // Dark inner marker
+            if (Width > 6f)
+            {
+                float inset = Width * 0.25f;
+                Raylib.DrawRectangleV(
+                    new Vector2(Position.X + inset, Position.Y + inset),
+                    new Vector2(Width - inset * 2f, Height - inset * 2f),
+                    darkCore);
+            }
+        }
+        else
+        {
+            // Standard moving projectile: red/orange, distinct from player blue/cyan
+            Raylib.DrawRectangleV(Position, new Vector2(Width, Height), Color.Orange);
+            if (Width > 6f && Height > 6f)
+            {
+                Raylib.DrawRectangleV(
+                    new Vector2(Position.X + 1f, Position.Y + 1f),
+                    new Vector2(Width - 2f, Height - 2f),
+                    Color.Red);
+            }
         }
     }
 }

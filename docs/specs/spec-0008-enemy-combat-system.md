@@ -3,10 +3,10 @@
 | Field    | Value                            |
 |----------|----------------------------------|
 | ID       | spec-0008                        |
-| Status   | In Progress (Phase 0 complete)   |
+| Status   | In Progress (Phase 1 complete)   |
 | Author   | rpabo + Claude                   |
 | Created  | 2026-03-28                       |
-| Updated  | 2026-03-30                       |
+| Updated  | 2026-03-30 (M2)                  |
 | Depends  | spec-0003 (HP), spec-0004 (AI profiles), spec-0002 (rarity/affixes), spec-0001 (modules) |
 
 ## Overview
@@ -588,10 +588,10 @@ Assets/
 - [x] `aimed_shot` attack + `fodder_shooter` AI profile — first enemy that shoots back.
 - [x] Visual telegraph (white flash) and red projectile color.
 
-### Phase 1 — Fodder Variety
-- [ ] Remaining fodder attacks: `burst_fire`, `spray`, `mine_layer`, `suicide_dive`.
-- [ ] New entry directions: `reverse_entry`, `dive_top`, `dive_bottom`.
-- [ ] Wire fodder attacks into `WaveSpawner` rotation.
+### Phase 1 — Fodder Variety ✅ Complete
+- [x] Remaining fodder attacks: `burst_fire`, `spray`, `mine_layer`, `suicide_dive`.
+- [x] New entry directions: `reverse_entry`, `dive_top`, `dive_bottom`.
+- [x] Wire fodder attacks into `WaveSpawner` rotation.
 
 ### Phase 2 — Elite Combat
 - [ ] Elite attack configs using `ProjectileParameters`.

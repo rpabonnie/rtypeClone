@@ -33,4 +33,11 @@ public class AiSystem
     }
 
     public bool HasProfile(string id) => _profiles.Has(id);
+
+    /// <summary>
+    /// Returns the entryDirection string for a given profile ("right", "left", "top", "bottom").
+    /// Used by WaveSpawner to place enemies on the correct screen edge.
+    /// </summary>
+    public string GetEntryDirection(string profileId) =>
+        _profiles.Has(profileId) ? _profiles.Get(profileId).EntryDirection : "right";
 }

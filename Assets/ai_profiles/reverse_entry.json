@@ -1,0 +1,7 @@
+{
+  "id": "reverse_entry",
+  "entryDirection": "left",
+  "nodes": [
+    { "type": "straight" }
+  ]
+}

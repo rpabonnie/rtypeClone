@@ -1,0 +1,21 @@
+{
+  "id": "spray",
+  "category": "projectile",
+  "cooldown": 3.5,
+  "telegraphTime": 0.5,
+  "burstCount": 1,
+  "burstInterval": 0.0,
+  "projectileSpeed": 320,
+  "damage": 1,
+  "lifetime": 4.0,
+  "count": 3,
+  "spreadAngleDeg": 45,
+  "homing": false,
+  "homingStrength": 0,
+  "pierce": 0,
+  "stationary": false,
+  "aimMode": "fixed_left",
+  "aimOffsetDeg": 0,
+  "projectileWidth": 8,
+  "projectileHeight": 8
+}

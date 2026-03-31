@@ -1,0 +1,7 @@
+{
+  "id": "dive_top",
+  "entryDirection": "top",
+  "nodes": [
+    { "type": "dive", "diveSpeed": 400.0, "curveAfter": 320.0, "exitDirection": "left" }
+  ]
+}

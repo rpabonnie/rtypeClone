@@ -114,7 +114,7 @@ public class GameState
 
         _background.Update(dt);
         _player.Update(dt, input, _bulletPool, _moduleSystem);
-        _waveSpawner.Update(dt, _enemyPool, _affixRegistry);
+        _waveSpawner.Update(dt, _enemyPool, _affixRegistry, _aiSystem);
 
         var aiCtx = new AiContext(dt, _player.Position, Constants.ScreenWidth, Constants.ScreenHeight);
 
@@ -156,7 +156,7 @@ public class GameState
         });
 
         _collisionSystem.CheckCollisions(_player, _bulletPool, _enemyPool, _damageNumberPool,
-            _dropSystem, _droppedGemPool, _gemInventory);
+            _dropSystem, _droppedGemPool, _gemInventory, _enemyProjectilePool);
         _collisionSystem.CheckEnemyProjectileVsPlayer(_enemyProjectilePool, _player);
     }
 

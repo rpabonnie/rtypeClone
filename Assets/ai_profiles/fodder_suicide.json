@@ -1,0 +1,8 @@
+{
+  "id": "fodder_suicide",
+  "entryDirection": "right",
+  "nodes": [
+    { "type": "sine", "amplitude": 60.0, "frequency": 1.5 },
+    { "type": "attack", "attackId": "suicide_dive" }
+  ]
+}

@@ -14,6 +14,7 @@ public class BehaviourRegistry
         Register(new StraightHandler());
         Register(new SineHandler());
         Register(new ZigzagHandler());
+        Register(new DiveHandler());
         Register(new AttackHandler(enemyProjectilePool, attackRegistry));
     }
 

@@ -64,9 +64,27 @@ public class AttackHandler : IBehaviourHandler
         if (state.TelegraphTimer < attackCfg.TelegraphTime)
             return;
 
-        // Telegraph complete — fire!
+        // Telegraph complete — fire (or trigger special attack)!
         state.IsTelegraphing = false;
         state.TelegraphTimer = 0f;
+
+        // Suicide dive: no projectile — activate charge movement instead
+        if (attackCfg.Category == "suicide_dive")
+        {
+            state.SuicideDiveActive = true;
+
+            // Point velocity directly at the player at charge speed (600 px/s)
+            const float ChargeSpeed = 600f;
+            var enemyCenter = new Vector2(position.X + 20f, position.Y + 16f);
+            var toPlayer = ctx.PlayerPosition - enemyCenter;
+            velocity = toPlayer.LengthSquared() > 0.001f
+                ? Vector2.Normalize(toPlayer) * ChargeSpeed
+                : new Vector2(-ChargeSpeed, 0f);
+
+            // One-shot: don't repeat the cooldown cycle
+            state.AttackCooldownTimer = float.MaxValue;
+            return;
+        }
 
         FireProjectiles(position, attackCfg, ctx.PlayerPosition);
 
@@ -105,8 +123,11 @@ public class AttackHandler : IBehaviourHandler
             aimDir = RotateVector(aimDir, rad);
         }
 
-        // Spawn position: left edge of enemy, vertically centered
-        var spawnPos = new Vector2(enemyPos.X, enemyPos.Y + 16f - cfg.ProjectileHeight / 2f);
+        // Stationary mines spawn at enemy centre; all others from the left edge
+        var spawnPos = cfg.Stationary
+            ? new Vector2(enemyPos.X + 20f - cfg.ProjectileWidth / 2f,
+                          enemyPos.Y + 16f - cfg.ProjectileHeight / 2f)
+            : new Vector2(enemyPos.X, enemyPos.Y + 16f - cfg.ProjectileHeight / 2f);
 
         if (cfg.Count <= 1)
         {
