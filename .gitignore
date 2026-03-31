@@ -22,3 +22,6 @@ desktop.ini
 # NuGet
 *.nupkg
 packages/
+
+# Claude Code internal — worktrees used by parallel AI sessions, never commit
+.claude/worktrees/
